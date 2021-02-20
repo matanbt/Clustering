@@ -37,9 +37,11 @@ def qr_iteration(A):
     # reached iterations bound (n)
     return A_, Q_
 
-def eigengap_method(A_):
+def eigengap_method(A_, k=None):
     """
     :param A_: (ndarray) matrix contains the eigenvalues on its diagonal line
+    :param k: if k is not None - skips k-calculation and forces it to be the given k
+              Note: this option effectively cancels the eigengap method.
     :return: determines K (by the eigengap method),
              returns an array of the 'first' K *indices* of the appropriate eigenvectors
              Note: the calculated K is the length of the returned array
@@ -50,9 +52,11 @@ def eigengap_method(A_):
     eigen_values = np.diagonal(A_)
     # 'stable' sorts eigen-values, and keeps the *indices* of the sorted array
     sorted_indices = np.argsort(eigen_values, kind='stable')
-    # calculates the abs difference array for the first half of the eigen-values
-    delta_arr = np.diff(eigen_values[sorted_indices][:n//2+1])
-    delta_arr = np.abs(delta_arr)
-    # gets the first appearance of the maximum difference
-    k = np.argmax(delta_arr) + 1
+    if k is None:
+        # calculates the abs difference array for the first half of the eigen-values
+        delta_arr = np.diff(eigen_values[sorted_indices][:n//2+1])
+        delta_arr = np.abs(delta_arr)
+        # gets the first appearance of the maximum difference
+        k = np.argmax(delta_arr) + 1
     return sorted_indices[:k]
+
