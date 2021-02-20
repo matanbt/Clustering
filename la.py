@@ -3,9 +3,7 @@
 Contains implementation to all algorithms related with Linear Alg.
 """
 import numpy as np
-
-# constants: TODO move all constants to config.py
-epsilon = 0.0001
+from config import epsilon
 
 
 
@@ -20,7 +18,7 @@ def qr_iteration(A):
     """
     n = A.shape[0]
     A_ = A.astype('float64')
-    Q_ = np.eye(n, n)
+    Q_ = np.eye(n)
 
     for i in range(n):
         # TODO switch next line to our implementation
@@ -43,8 +41,9 @@ def eigengap_method(A_):
     """
     :param A_: (ndarray) matrix contains the eigenvalues on its diagonal line
     :return: determines K (by the eigengap method),
-             returns an array of the 'first' K indices of the appropriate eigenvectors
+             returns an array of the 'first' K *indices* of the appropriate eigenvectors
              Note: the calculated K is the length of the returned array
+             Note 2: assumption is that the original order is valuable, hence its indices are to be returned
     """
     n = A_.shape[0]
 
