@@ -1,5 +1,4 @@
 kmeans_pp.py
-kmeans.c
 
 
 # Byte-compiled / optimized / DLL files
@@ -9,6 +8,8 @@ __pycache__/
 
 # C extensions
 *.so
+*.pyd
+teste.py
 
 # Distribution / packaging
 .Python
