@@ -4,7 +4,6 @@ Implementation for the Normalized Spectral Clustering Algorithm, using 'linalg' 
 Note: all functions assume correctness of the input; in particular an input of ndarray with type 'float64'
 """
 import numpy as np
-from sklearn.cluster import KMeans # TODO delete after synchronizing Kmeans_pp
 
 from linalg import qr_iteration, eigengap_method
 from kmeans_pp import k_means_pp  # TODO synchronize with kmeans_pp
@@ -19,7 +18,8 @@ def weight_func(x_i, x_j):
     diff_vector = x_i - x_j
     return np.exp(-0.5 * np.linalg.norm(diff_vector))
 
-def form_Weight(x):
+
+def form_weight(x):
     """
     :param x: an array of n vector from d-dimension; i.e. array of shape (n,d)
     :return: calculates the connection-weight-matrix of x of shape (n,n)
@@ -35,22 +35,24 @@ def form_Weight(x):
     return w
 
 
-def form_Weight_np(x):
+# TODO either optimize the next function or delete it
+def form_weight_np(x):
     """
     numpy alternative to 'form_Weight' (tested to run *slower* than python)
     """
     n = x.shape[0]
 
     # form Weight Matrix :
-    w = np.zeros((n,n))
-    u_weight_func = np.frompyfunc(lambda i,j: weight_func(x[i], x[j]), 2, 1)
-    triu1, triu2 = np.triu_indices(n,1)
+    w = np.zeros((n, n))
+    u_weight_func = np.frompyfunc(lambda i, j: weight_func(x[i], x[j]), 2, 1)
+    triu1, triu2 = np.triu_indices(n, 1)
     upper_triangle = u_weight_func(triu1, triu2)
     w[triu1, triu2] = upper_triangle
     w = w + w.T  # adds the symmetric upper triangle
     return w
 
-def form_Laplacian(w):
+
+def form_laplacian(w):
     """
     :param w: Positive weight-matrix of shape (n,n)
     :return: the laplacian based on the weight-matrix
@@ -65,7 +67,7 @@ def form_Laplacian(w):
     return np.eye(n) - np.linalg.multi_dot([d, w, d])
 
 
-def form_U(l, k=None):
+def form_u(l, k=None):
     """
     :param l: l_norm matrix, i.e. laplacian
     :param k: optional - choose k in advance and force it
@@ -74,12 +76,12 @@ def form_U(l, k=None):
     """
 
     e_values, e_vectors = qr_iteration(l)
-    k_indices= eigengap_method(e_values, k)
+    k_indices = eigengap_method(e_values, k)
     u = e_vectors[:, k_indices]
     return u
 
 
-def form_T(u):
+def form_t(u):
     t = u / np.linalg.norm(u, axis=1, keepdims=True)
     return t
 
@@ -93,17 +95,17 @@ def run_nsc(x, k=None):
              res - n-sized array, res[i]=j IFF x_i belongs to cluster c_j
     """
     # Phase 1:
-    w = form_Weight(x)
+    w = form_weight(x)
     # Phase 2:
-    l = form_Laplacian(w)
+    l = form_laplacian(w)
     # Phase 3%4:
-    u = form_U(l, k)
+    u = form_u(l, k)
     # Phase 5
-    t = form_T(u)
+    t = form_t(u)
     k = t.shape[1]
     # Phase 6&7
     res = KMeans(n_clusters=k, random_state=0).fit(t)
-    # TODO synchronize kmeans.
+    # TODO synchronize kmeans!
     #  notes: (1) delivers ndarray each row is obs!
     #         (2) expects clusters indices back! (not just centroids)
     #         (3) max_iter is 300

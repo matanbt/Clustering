@@ -7,50 +7,53 @@ import numpy as np
 from config import epsilon
 
 
-def qr_iteration(A):
+def qr_iteration(a):
     """
     QR Iteration Algorithm for finding EigenValues and EigenVectors
-    :param A: 2-D ndarray, with shape (n,n)
-    :precondition: input is valid, A is from type 'float64'
-    :return: A_ - diagonal matrix with A's approximated eigenvalues
-             Q_ - orthogonal matrix, each column is approximated eigenvector of A
+    :param a: 2-D ndarray, with shape (n,n)
+    :precondition: input is valid, a is from type 'float64'
+    :return: a_ - diagonal matrix with a's approximated eigenvalues
+             q_ - orthogonal matrix, each column is approximated eigenvector of a
     """
-    n = A.shape[0]
-    A_ = A
-    Q_ = np.eye(n)
+    # Implementation Note: variables names kept the same as the pseudo code's
+    n = a.shape[0]
+    a_ = a
+    q_ = np.eye(n)
+    delta_matrix = np.empty((n, n))
+    # TODO prevent reallocating 'temp_q' by using swap
 
     for i in range(n):
-        # TODO switch next line to our implementation
-        Q, R = gram_schmidt(A_)
-        np.matmul(R, Q, out=A_)
-        temp_Q = np.matmul(Q_, Q)
-        delta_matrix = np.abs(Q_) - np.abs(temp_Q)
+        q, r = gram_schmidt(a_)
+        np.matmul(r, q, out=a_)
+        temp_q = np.matmul(q_, q)
+        np.subtract(np.abs(q_), np.abs(temp_q), out=delta_matrix)
         if np.all(np.abs(delta_matrix) <= epsilon):
             # reached convergence
-            return A_, Q_
-        Q_ = temp_Q
+            return a_, q_
+        q_ = temp_q
     # reached iterations bound (n)
-    return A_, Q_
+    return a_, q_
 
-def eigengap_method(A_, k=None):
+
+def eigengap_method(a_, k=None):
     """
     EigenGap Method - a heuristic for finding the amount of clusters
-    :param A_: (ndarray) matrix contains the eigenvalues on its diagonal line
+    :param a_: (ndarray) matrix contains the eigenvalues on its diagonal line
     :param k: if k is not None - skips k-calculation and forces it to be the given k
               Note: this option effectively cancels the eigengap method.
     :return: array of the 'first' K *indices* of the appropriate eigenvectors
              Note: the calculated K is the length of the returned array, which determined  by the eigengap method
              Note 2: assumption is that the original order is valuable, hence its indices are to be returned
     """
-    n = A_.shape[0]
+    n = a_.shape[0]
 
-    eigen_values = np.diagonal(A_)
+    eigen_values = np.diagonal(a_)
     # sorts eigen-values, and keeps the *indices* of the sorted array
     sorted_indices = np.argsort(eigen_values)
     if k is None:
         # calculates the abs difference array for the first half of the eigen-values
-        delta_arr = np.diff(eigen_values[sorted_indices][:n//2+1])
-        delta_arr = np.abs(delta_arr)
+        delta_arr = np.diff(eigen_values[sorted_indices][:n // 2 + 1])
+        np.abs(delta_arr, out=delta_arr)
         # gets the first appearance of the maximum difference
         k = np.argmax(delta_arr) + 1
     return sorted_indices[:k]
