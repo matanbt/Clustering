@@ -16,7 +16,7 @@ typedef struct
 {
     /*
      * mu - point to the d-vector represents the mu of the cluster
-     * obs_array - each element of the array is a points to an observation BELONGS to the cluster
+     * obs_array - each element of the array points to an observation BELONGS to the cluster
      * len - keeps track of the length of the array (mentioned above)
      */
     double * mu;
@@ -86,7 +86,7 @@ static int calc_mu(cluster_t * cluster, int d)
  * returns NULL
  */
 static void free_memory(double ** observations, double * observations_arr,
-                              cluster_t * clusters, size_t * clusters_indices, int K, int err_flag)
+                        cluster_t * clusters, size_t * clusters_indices, int K, int err_flag)
 {
     FREE_MEM(observations_arr)
     FREE_MEM(observations)
@@ -188,7 +188,7 @@ static int kmeans_impl(double ** observations, cluster_t * clusters, int d, int 
                 }
             }
 
-            /* append observations pointer to the closest cluster */
+            /* append observation pointer to the closest cluster */
             pos = clusters[closest_cluster].len;
             clusters[closest_cluster].obs_array[pos] = observations[i];
             clusters[closest_cluster].len++;
@@ -212,7 +212,7 @@ static int kmeans_impl(double ** observations, cluster_t * clusters, int d, int 
 
 /*========================= Python Integration ============================*/
 /*
- * K-Means(observations, centroids_indices,
+ * K-Means(observations, centroids_indices, K, N, d, MAX_ITER)
  * gets 6 positional arguments:
  * @param 1: observations: N-sized List with D-sized tuples (with float values)
  * @param 2: centroids_indices: K-sized List of indices (integer) indicates the chosen observations from the list above
@@ -231,7 +231,7 @@ static PyObject * kmeans_api(PyObject * self, PyObject * args)
     size_t * clusters_indices = NULL;
     cluster_t * clusters = NULL;
 
-    int i, j;
+    int i, j, pos;
     if (!PyArg_ParseTuple(args, "OOiiii; Y'all Better check your args before you run me!",
                           &obs_lst, &indices_lst, &K, &N, &d, &MAX_ITER))
         return PyErr_Format(PyExc_ValueError, "Input is not valid");
@@ -266,7 +266,6 @@ static PyObject * kmeans_api(PyObject * self, PyObject * args)
             observations[i][j] = val;
         }
     }
-
     /* Process Indices: python's indices_lst ---> clusters_indices */
     clusters_indices = malloc(sizeof(*clusters_indices) * K);
     FREE_ALL_MEM_IN_CASE(NULL == clusters_indices);
@@ -287,30 +286,23 @@ static PyObject * kmeans_api(PyObject * self, PyObject * args)
     /* Runs K-Means Implementation, it will mutate 'clusters' array (breaks program if it raised an error */
     FREE_ALL_MEM_IN_CASE(kmeans_impl(observations, clusters, d, K, N, MAX_ITER) < 0);
 
-
-    /* Pack clusters (=the MU value of each) in Python-List */
-    PyObject * clusters_lst = PyList_New(K);
+    /* pack clusters_lst to python-list
+     * clusters_lst[i] = j IFF observation #i belongs to cluster #j */
+    PyObject * clusters_lst = PyList_New(N);
     for (i = 0; i < K; i++)
     {
-        /* Builds a vector (=tuple) that'll represent each MU */
-        PyObject * mu_vector = PyTuple_New(d);
-        for (j = 0; j < d; j++)
+        /* for each cluster, iterate on its observations and label them on  clusters_lst*/
+        for (j = 0; j < clusters[i].len; j++)
         {
-            if (PyTuple_SetItem(mu_vector, j, PyFloat_FromDouble(clusters[i].mu[j])) < 0)
+            pos = (clusters[i].obs_array[j] - observations_arr) / d; //TODO test me
+            if (PyList_SetItem(clusters_lst, pos, PyLong_FromLong(i)) < 0)
             {
-                Py_DecRef(mu_vector);
                 Py_DecRef(clusters_lst);
                 FREE_ALL_MEM_IN_CASE(1);
             }
         }
-        /* adds mu_vector to the list, also steals its reference - so we don't have to decref' it */
-        if (PyList_SetItem(clusters_lst, i, mu_vector) < 0)
-        {
-            Py_DecRef(mu_vector);
-            Py_DecRef(clusters_lst);
-            FREE_ALL_MEM_IN_CASE(1);
-        }
     }
+    /* end of packing clusters_lst*/
 
     /* Free all memory */
     free_memory(observations, observations_arr, clusters, clusters_indices, K, 0);
@@ -326,7 +318,7 @@ PyDoc_STRVAR(kmeans_doc, "kmeans(observations, centroids_indices, K, N, d, MAX_I
                          " :param centroids_indices: K-sized List of indices (integer) indicates the chosen observations from the list above\n"
                          " :params 3-6: K, N, d, MAX_ITER: K-Means algorithm arguments\n"
                          " :precondition: Input is valid \n"
-                         " :returns: K-sized List with D-sized tuples, each tuple represent a final centroid");
+                         " :returns: N-sized List, each element represents the cluster of its index");
 static PyMethodDef capiMethods[] = {
         {"kmeans", (PyCFunction) kmeans_api, METH_VARARGS, kmeans_doc},
         {NULL, NULL, 0, NULL}
