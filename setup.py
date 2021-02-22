@@ -2,7 +2,7 @@ from setuptools import setup, Extension
 
 """
 A setup for our kmeans library
-command line - $python setup.py build_ext --inplace
+command line: $python setup.py build_ext --inplace
 """
 
 setup(name="mykmeanssp",

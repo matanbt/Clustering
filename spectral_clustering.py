@@ -1,24 +1,28 @@
+"""
+----- Normalized Spectral Clustering -----
+Implementation for the Normalized Spectral Clustering Algorithm, using 'linalg' module
+Note: all functions assume correctness of the input; in particular an input of ndarray with type 'float64'
+"""
 import numpy as np
-from la import qr_iteration, eigengap_method
+from sklearn.cluster import KMeans # TODO delete after synchronizing Kmeans_pp
+
+from linalg import qr_iteration, eigengap_method
 from kmeans_pp import k_means_pp  # TODO synchronize with kmeans_pp
-from timeit import timeit
 
 
 def weight_func(x_i, x_j):
     """
+    Calculates the Weight of connection of 2 given vectors
     :param x_i, x_j: d-dimensioned vectors
     :return: calculates the weight of connection between x_i to x_j
     """
     diff_vector = x_i - x_j
-    # TODO euclidean norm with sqrt or without?
-    # return np.exp(-0.5 * (np.inner(diff_vector, diff_vector)))
     return np.exp(-0.5 * np.linalg.norm(diff_vector))
 
-
-def form_Laplacian(x):
+def form_Weight(x):
     """
     :param x: an array of n vector from d-dimension; i.e. array of shape (n,d)
-    :return: calculates the laplacian based on x
+    :return: calculates the connection-weight-matrix of x of shape (n,n)
     """
     n = x.shape[0]
 
@@ -28,10 +32,34 @@ def form_Laplacian(x):
         for j in range(i + 1, n):
             w[i, j] = weight_func(x[i], x[j])
     w = w + w.T  # adds the symmetric upper triangle
+    return w
+
+
+def form_Weight_np(x):
+    """
+    numpy alternative to 'form_Weight' (tested to run *slower* than python)
+    """
+    n = x.shape[0]
+
+    # form Weight Matrix :
+    w = np.zeros((n,n))
+    u_weight_func = np.frompyfunc(lambda i,j: weight_func(x[i], x[j]), 2, 1)
+    triu1, triu2 = np.triu_indices(n,1)
+    upper_triangle = u_weight_func(triu1, triu2)
+    w[triu1, triu2] = upper_triangle
+    w = w + w.T  # adds the symmetric upper triangle
+    return w
+
+def form_Laplacian(w):
+    """
+    :param w: Positive weight-matrix of shape (n,n)
+    :return: the laplacian based on the weight-matrix
+    """
+    n = w.shape[0]
 
     # form D^-0.5 :
     d = np.zeros((n, n))
-    np.fill_diagonal(d, 1 / np.sqrt(np.sum(w, axis=0)))
+    np.fill_diagonal(d, 1 / np.sqrt(np.sum(w, axis=0), dtype=float))
 
     # calculate L_norm
     return np.eye(n) - np.linalg.multi_dot([d, w, d])
@@ -46,61 +74,37 @@ def form_U(l, k=None):
     """
 
     e_values, e_vectors = qr_iteration(l)
-    k_indices = eigengap_method(e_values, k)
+    k_indices= eigengap_method(e_values, k)
     u = e_vectors[:, k_indices]
     return u
 
 
 def form_T(u):
-    t = u / np.linalg.norm(arr, axis=1, keepdims=True)
+    t = u / np.linalg.norm(u, axis=1, keepdims=True)
     return t
 
 
 def run_nsc(x, k=None):
     """
+    Normalized Spectral Clustering Algorithm
     :param x: a collection of n points in R^d, given via array of shape (n,d)
     :param k: optional - choose k in advance and force it
     :return: the result of the Normalized Spectral Algorithm:
              res - n-sized array, res[i]=j IFF x_i belongs to cluster c_j
     """
-    # Phase 1&2:
-    l = form_Laplacian(x)
+    # Phase 1:
+    w = form_Weight(x)
+    # Phase 2:
+    l = form_Laplacian(w)
     # Phase 3%4:
     u = form_U(l, k)
     # Phase 5
     t = form_T(u)
     k = t.shape[1]
     # Phase 6&7
-    res = k_means(k, t)
+    res = KMeans(n_clusters=k, random_state=0).fit(t)
     # TODO synchronize kmeans.
     #  notes: (1) delivers ndarray each row is obs!
     #         (2) expects clusters indices back! (not just centroids)
     #         (3) max_iter is 300
-    return res
-
-
-# ------------------------------------ END OF CODE ------------------------
-def sanity_check():
-    x = np.array(
-        [
-            [0, 2, 4],
-            [2, 4, 6],
-            [4, 6, 8],
-            [5, 5, 5],
-            [2, 8, 99],
-        ]
-    )
-    print(form_laplacian(x))
-
-# deprecated code - pythonic way is surprisingly faster
-# def form_laplacian1(x):
-#     """
-#     :param x: an array of n vector from d-dimension; i.e. array of shape (n,d)
-#     :return: calculates the laplacian based on x
-#     """
-#     n = x.shape[0]
-#
-#     np_weight = np.frompyfunc(lambda i, j: weight_func(x[int(i)], x[int(j)]), 2, 1)
-#     w = np.fromfunction(np_weight, (n, n))
-#     np.fill_diagonal(w,0)
-#     print(w)
+    return res.labels_

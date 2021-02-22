@@ -1,10 +1,13 @@
+"""
+----- Main Module -----
+"""
 import numpy as np
 
 def print_clusters(k, labeled_obs_nsc, labeled_obs_km):
     """
     :param labeled_obs_nsc: gets np-array, in which each index represent an obs and each element is its cluster
     :param labeled_obs_km: same as above
-    :return: formatted string to be printed to the txt
+    :return: formatted string to be printed to  clusters.txt
     """
     #TODO - what if the k's are different??
 
