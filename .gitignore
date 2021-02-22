@@ -1,3 +1,7 @@
+__pycache__
+.idea
+cmake-build-debug
+*.pyd
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
