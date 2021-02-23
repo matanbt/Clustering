@@ -4,7 +4,7 @@ Contains implementation to all algorithms related with Linear Alg.
 """
 import numpy as np
 
-from config import epsilon
+from config import EPSILON
 
 
 def qr_iteration(a):
@@ -17,20 +17,21 @@ def qr_iteration(a):
     """
     # Implementation Note: variables names kept the same as the pseudo code's
     n = a.shape[0]
-    a_ = a
+    a_ = a.copy()
     q_ = np.eye(n)
+    temp_q = np.empty((n, n))
     delta_matrix = np.empty((n, n))
-    # TODO prevent reallocating 'temp_q' by using swap
 
     for i in range(n):
-        q, r = gram_schmidt(a_)
+        # q, r = gram_schmidt(a_)
+        q, r = np.linalg.qr(a_)
         np.matmul(r, q, out=a_)
-        temp_q = np.matmul(q_, q)
+        np.matmul(q_, q, out=temp_q)
         np.subtract(np.abs(q_), np.abs(temp_q), out=delta_matrix)
-        if np.all(np.abs(delta_matrix) <= epsilon):
+        if np.all(np.abs(delta_matrix, out=delta_matrix) <= EPSILON):
             # reached convergence
             return a_, q_
-        q_ = temp_q
+        q_, temp_q = temp_q, q_
     # reached iterations bound (n)
     return a_, q_
 
@@ -42,8 +43,10 @@ def eigengap_method(a_, k=None):
     :param k: if k is not None - skips k-calculation and forces it to be the given k
               Note: this option effectively cancels the eigengap method.
     :return: array of the 'first' K *indices* of the appropriate eigenvectors
-             Note: the calculated K is the length of the returned array, which determined  by the eigengap method
-             Note 2: assumption is that the original order is valuable, hence its indices are to be returned
+             Note: the calculated K is the length of the returned array, which
+                   determined  by the eigengap method
+             Note 2: assumption is that the original order is valuable, hence
+                     its indices are to be returned
     """
     n = a_.shape[0]
 
@@ -51,7 +54,7 @@ def eigengap_method(a_, k=None):
     # sorts eigen-values, and keeps the *indices* of the sorted array
     sorted_indices = np.argsort(eigen_values)
     if k is None:
-        # calculates the abs difference array for the first half of the eigen-values
+        # calculates the abs difference array for the first half of the  eigen-values
         delta_arr = np.diff(eigen_values[sorted_indices][:n // 2 + 1])
         np.abs(delta_arr, out=delta_arr)
         # gets the first appearance of the maximum difference

@@ -1,12 +1,14 @@
 """
 ----- Normalized Spectral Clustering -----
-Implementation for the Normalized Spectral Clustering Algorithm, using 'linalg' module
-Note: all functions assume correctness of the input; in particular an input of ndarray with type 'float64'
+Implementation for the Norm. Spectral Clustering Algorithm, using 'linalg' module
+Note: all functions assume correctness of the input; in particular an input of
+      ndarray with type 'float64'
 """
 import numpy as np
 
 from linalg import qr_iteration, eigengap_method
-from kmeans_pp import k_means_pp  # TODO synchronize with kmeans_pp
+from config import MAX_ITER
+# from kmeans_pp import k_means_pp  # TODO synchronize with kmeans_pp
 
 
 def weight_func(x_i, x_j):
@@ -71,7 +73,8 @@ def form_u(l, k=None):
     """
     :param l: l_norm matrix, i.e. laplacian
     :param k: optional - choose k in advance and force it
-    :return: forms U, the matrix contains the first K eigenvectors which determined by EigenGap
+    :return: forms U, the matrix contains the first K eigenvectors which
+             determined by EigenGap
             (U is of shape (n,k), each column is a chosen eigen-vector)
     """
 
@@ -98,15 +101,15 @@ def run_nsc(x, k=None):
     w = form_weight(x)
     # Phase 2:
     l = form_laplacian(w)
-    # Phase 3%4:
+    # Phase 3&4:
     u = form_u(l, k)
     # Phase 5
     t = form_t(u)
-    k = t.shape[1]
+    n, k = t.shape
     # Phase 6&7
-    res = KMeans(n_clusters=k, random_state=0).fit(t)
+    res = our_kmeans(obs_lst=t, K=k, N=n, d=k, MAX_ITER=MAX_ITER)
     # TODO synchronize kmeans!
     #  notes: (1) delivers ndarray each row is obs!
     #         (2) expects clusters indices back! (not just centroids)
     #         (3) max_iter is 300
-    return res.labels_
+    return res
