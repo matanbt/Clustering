@@ -59,14 +59,14 @@ def form_laplacian(w):
     :param w: Positive weight-matrix of shape (n,n)
     :return: the laplacian based on the weight-matrix
     """
-    n = w.shape[0]
 
-    # form D^-0.5 :
-    d = np.zeros((n, n))
-    np.fill_diagonal(d, 1 / np.sqrt(np.sum(w, axis=0), dtype=float))
-
-    # calculate L_norm
-    return np.eye(n) - np.linalg.multi_dot([d, w, d])
+    # form D^-0.5 as a row vector:
+    d_diagonal = 1 / np.sqrt(np.sum(w, axis=0), dtype=float)
+    # calculate (- D * W * D), considering D is diagonal matrix
+    l = - d_diagonal[:, None] * w * d_diagonal
+    # adds I
+    np.fill_diagonal(l, l.diagonal() + 1)
+    return l
 
 
 def form_u(l, k=None):
@@ -96,6 +96,7 @@ def run_nsc(x, k=None):
     :param k: optional - choose k in advance and force it
     :return: the result of the Normalized Spectral Algorithm:
              res - n-sized array, res[i]=j IFF x_i belongs to cluster c_j
+             k - the calculated / given k (depends on the input k)
     """
     # Phase 1:
     w = form_weight(x)
@@ -112,4 +113,5 @@ def run_nsc(x, k=None):
     #  notes: (1) delivers ndarray each row is obs!
     #         (2) expects clusters indices back! (not just centroids)
     #         (3) max_iter is 300
-    return res
+    # return K below
+    return res, k

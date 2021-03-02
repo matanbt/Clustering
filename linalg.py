@@ -3,6 +3,7 @@
 Contains implementation to all algorithms related with Linear Alg.
 """
 import numpy as np
+from math import ceil
 
 from config import EPSILON
 
@@ -81,7 +82,7 @@ def eigengap_method(a_, k=None):
     sorted_indices = np.argsort(eigen_values)
     if k is None:
         # calculates the abs difference array for the first half of the  eigen-values
-        delta_arr = np.diff(eigen_values[sorted_indices][:n // 2 + 1])
+        delta_arr = np.diff(eigen_values[sorted_indices][:ceil(n / 2)])
         np.abs(delta_arr, out=delta_arr)
         # gets the first appearance of the maximum difference
         k = np.argmax(delta_arr) + 1

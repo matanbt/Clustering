@@ -114,7 +114,7 @@ def sanity_check__run():
          (1, 1, 0),
          (8, 7, 6),
          (7, 8, 9)], dtype=float)
-    clusters = nsc.run_nsc(x,3)
+    clusters, k = nsc.run_nsc(x,3)
     assert clusters[0] == clusters[1] == clusters[3] and clusters[4] == clusters[5] \
            and len({clusters[0],clusters[4],clusters[2]}) == 3
     print("TESTED RUN FOR SANITY-CHECK SUCCESSFULLY")
@@ -124,6 +124,13 @@ def test__res_phase():
     # res = KMeans(n_clusters=k, random_state=0).fit(t)
     # return res.labels_
     pass
+def test_laplacian_comparison():
+    w = np.random.rand(50,50)
+    r1 = nsc.form_laplacian(w)
+    r2 = nsc.form_laplacian_imp(w)
+    assert np.allclose(r1, r2, atol=0.001)
+    print('(1) - ', timeit(lambda: nsc.form_laplacian(w), number=100) * 10000)
+    print('(2) - ', timeit(lambda : nsc.form_laplacian_imp(w), number=100)*10000)
 
 # ------------------ TIME COMPARISONS: -----------------
 def time__run(n,d):
