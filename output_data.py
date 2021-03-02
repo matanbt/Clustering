@@ -5,9 +5,60 @@ module for post-processing and outputting the results of the run
 
 import matplotlib.pyplot as plt
 import numpy as np
+# TODO filenames to CONFIG.PY
+FNAME_DATA_TXT = "data.txt"
+FNAME_CLUSTERS_TXT = "clusters.txt"
+FNAME_VIS_PDF = "clusters.pdf"
 
 
-# will be used by main
+def print_data_txt(obs_lst, centers):
+    """
+        :param obs_lst: a numpy-array of points
+        :param centers: The REAL center corresponding to each point
+        :return: prints formatted data to 'data.txt'
+    """
+    # TODO - a design thought: maybe it's better returning a string
+    #                          and the print itself will be done IN MAIN.PY?
+
+    n, d = obs_lst.shape
+    format_arr = ["%f"] * d + ["%d"]
+    output_array = np.empty((n, d + 1))
+    output_array[:, :-1] = obs_lst
+    output_array[:, -1] = centers
+    np.savetxt(FNAME_DATA_TXT, output_array,
+               fmt=format_arr, delimiter=',')
+
+
+def print_clusters_txt(k, labeled_obs_nsc, labeled_obs_km):
+    """
+    :param labeled_obs_nsc: gets np-array, in which each index represent an obs
+                            and each element is its cluster
+    :param labeled_obs_km: same as above
+    :return: prints formatted data to 'clusters.txt'
+    """
+    # TODO - what if the k's are different??
+
+    s = f"{k}\n"
+
+    def format_clusters(labeled_obs):
+        # helper method for formatting the clusters' string
+        _s = ""
+        clusters_dict = {}
+        for i, cluster in enumerate(labeled_obs):
+            if cluster not in clusters_dict:
+                clusters_dict[cluster] = f"{i},"
+            else:
+                clusters_dict[cluster] += f"{i},"
+        for line in clusters_dict.values():
+            _s += line[:-1] + "\n"
+        return _s
+
+    s += format_clusters(labeled_obs_nsc)
+    s += format_clusters(labeled_obs_km)
+    with open(FNAME_CLUSTERS_TXT, "w") as f:
+        f.write(s)
+
+
 def calc_jaccard(centers, clusters):
     """
     Calculates the 'Jaccard' distance between original-centers to the
@@ -71,4 +122,4 @@ def visualization_pdf(k, points, kmeans_clusters, spectral_clusters, spcetral_k,
     # footer text
     fig.text(0.5, 0.15, text_footer, ha='center', size=17)
     # figure's epilogue
-    fig.savefig("clusters.pdf")
+    fig.savefig(FNAME_VIS_PDF)
