@@ -1,3 +1,8 @@
+"""
+----- User Input Module -----
+Deals with accepting, processing and validating the user's input.
+Also deals  with generating random points intended to be clustered
+"""
 import argparse
 from dataclasses import dataclass
 import numpy as np
