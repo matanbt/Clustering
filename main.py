@@ -23,7 +23,7 @@ def main():
     spectral_clusters = np.array(spectral_clusters)
     # KMEANS:
     kmeans_clusters = kmeans(points, params.k, params.n, params.dim, MAX_ITER)
-    kmeans_clusters = np.array(kmeans_clusters) 
+    kmeans_clusters = np.array(kmeans_clusters)
     # OUTPUT:
     print_data_txt(points, centers)
     print_clusters_txt(params.k, spectral_clusters, kmeans_clusters)
