@@ -1,6 +1,8 @@
 .idea
 docs
-kmeans_pp.py
+clusters.pdf
+clusters.txt
+data.txt
 
 
 # Byte-compiled / optimized / DLL files

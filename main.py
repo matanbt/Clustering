@@ -7,11 +7,13 @@ import user_input
 from spectral_clustering import run_nsc as nsc
 from kmeans_pp import kmeans
 from output_data import print_data_txt, print_clusters_txt, \
-                        visualization_pdf, calc_jaccard
+                        visualization_pdf, calc_jaccard, print_message
 from config import MAX_ITER
 
 
 def main():
+    # PRINTS INFORMATIVE MESSAGE:
+    print_message()
     # PROCESS PARAMETERS:
     args = user_input.get_args()
     if not user_input.check_user_input(args):

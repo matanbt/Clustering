@@ -4,7 +4,6 @@ Contains implementation to all algorithms related with Linear Alg.
 """
 import numpy as np
 from math import ceil
-
 from config import EPSILON
 
 
