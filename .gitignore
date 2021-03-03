@@ -1,3 +1,5 @@
+.idea
+docs
 kmeans_pp.py
 
 
@@ -38,4 +40,8 @@ cmake-build-debug
 .idea
 CMakeLists.txt
 docs
+
+# Pyre type checker
+.pyre/
+Docs/FinalProjectInstructions.pdf
 
