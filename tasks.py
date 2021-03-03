@@ -2,12 +2,12 @@ from invoke import task
 
 
 @task
-def run(c, K, N, random=False):
+def run(c, k, n, Random=False):
     c.run("python3.8.5 setup.py build_ext --inplace")
-    random = "--random" if random else ""
-    c.run(f"python3.8.5 main.py {random} {K} {N}")
-    if not random:
-        print(f"Clustering with: K={K}, N={N}")
+    Random = "--random" if Random else ""
+    c.run(f"python3.8.5 main.py {Random} {k} {n}")
+    if not Random:
+        print(f"Clustering with: K={k}, N={n}")
     else:
         print(f"Clustering with randomized K,N")
 
