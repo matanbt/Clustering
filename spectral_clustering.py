@@ -7,7 +7,7 @@ Note: all functions assume correctness of the input; in particular an input of
 import numpy as np
 from linalg import qr_iteration, eigengap_method
 from config import MAX_ITER
-from kmeans_pp import k_means  # TODO synchronize with kmeans_pp
+from kmeans_pp import kmeans
 
 
 def weight_func(x_i, x_j):
