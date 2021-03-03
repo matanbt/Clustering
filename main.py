@@ -4,7 +4,7 @@ Glues all modules together to provide the desired finished products
 """
 import user_input
 from spectral_clustering import run_nsc as nsc
-from kmeans_pp import k_means_pp as kmeans  # TODO MAKE SURE IT'S RIGHT
+from kmeans_pp import kmeans
 from output_data import print_data_txt, print_clusters_txt, \
                         visualization_pdf, calc_jaccard
 from config import MAX_ITER
@@ -20,7 +20,7 @@ def main():
     spectral_k, spectral_clusters = nsc(points,
                                         None if params.random else params.k)
     # KMEANS:
-    kmeans_clusters = kmeans(points, params.k, MAX_ITER)  # TODO API
+    kmeans_clusters = kmeans(points, params.k, params.n, params.dim, MAX_ITER)
     # OUTPUT:
     print_data_txt(points, centers)
     print_clusters_txt(params.k, spectral_clusters, kmeans_clusters)
