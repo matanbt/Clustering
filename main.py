@@ -2,6 +2,7 @@
 ----- Main Module -----
 Glues all modules together to provide the desired finished products
 """
+import numpy as np
 import user_input
 from spectral_clustering import run_nsc as nsc
 from kmeans_pp import kmeans
@@ -17,10 +18,12 @@ def main():
         return None
     params, points, centers = user_input.generate_points(args)
     # NSC:
-    spectral_k, spectral_clusters = nsc(points,
+    spectral_clusters, spectral_k = nsc(points,
                                         None if params.random else params.k)
+    spectral_clusters = np.array(spectral_clusters)
     # KMEANS:
     kmeans_clusters = kmeans(points, params.k, params.n, params.dim, MAX_ITER)
+    kmeans_clusters = np.array(kmeans_clusters) 
     # OUTPUT:
     print_data_txt(points, centers)
     print_clusters_txt(params.k, spectral_clusters, kmeans_clusters)
