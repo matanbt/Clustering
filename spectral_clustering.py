@@ -5,10 +5,9 @@ Note: all functions assume correctness of the input; in particular an input of
       ndarray with type 'float64'
 """
 import numpy as np
-
 from linalg import qr_iteration, eigengap_method
 from config import MAX_ITER
-# from kmeans_pp import k_means_pp  # TODO synchronize with kmeans_pp
+from kmeans_pp import k_means  # TODO synchronize with kmeans_pp
 
 
 def weight_func(x_i, x_j):
@@ -89,17 +88,17 @@ def form_t(u):
     return t
 
 
-def run_nsc(x, k=None):
+def run_nsc(points, k=None):
     """
     Normalized Spectral Clustering Algorithm
-    :param x: a collection of n points in R^d, given via array of shape (n,d)
+    :param points: a collection of n points in R^d, given via array of shape (n,d)
     :param k: optional - choose k in advance and force it
     :return: the result of the Normalized Spectral Algorithm:
              res - n-sized array, res[i]=j IFF x_i belongs to cluster c_j
              k - the calculated / given k (depends on the input k)
     """
     # Phase 1:
-    w = form_weight(x)
+    w = form_weight(points)
     # Phase 2:
     l = form_laplacian(w)
     # Phase 3&4:
@@ -108,10 +107,5 @@ def run_nsc(x, k=None):
     t = form_t(u)
     n, k = t.shape
     # Phase 6&7
-    res = our_kmeans(obs_lst=t, K=k, N=n, d=k, MAX_ITER=MAX_ITER)
-    # TODO synchronize kmeans!
-    #  notes: (1) delivers ndarray each row is obs!
-    #         (2) expects clusters indices back! (not just centroids)
-    #         (3) max_iter is 300
-    # return K below
+    res = kmeans(points=t, K=k, N=n, d=k, MAX_ITER=MAX_ITER)
     return res, k
