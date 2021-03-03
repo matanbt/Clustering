@@ -1,7 +1,8 @@
 .idea
 docs
-kmeans_pp.py
-
+data.txt
+clusters.pdf
+clusters.txt
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
