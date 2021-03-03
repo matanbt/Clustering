@@ -5,10 +5,9 @@ Note: all functions assume correctness of the input; in particular an input of
       ndarray with type 'float64'
 """
 import numpy as np
-
 from linalg import qr_iteration, eigengap_method
 from config import MAX_ITER
-# from kmeans_pp import k_means_pp  # TODO synchronize with kmeans_pp
+from kmeans_pp import k_means_pp  # TODO synchronize with kmeans_pp
 
 
 def weight_func(x_i, x_j):
