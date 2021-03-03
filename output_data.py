@@ -30,7 +30,6 @@ def print_clusters_txt(k, labeled_obs_nsc, labeled_obs_km):
     :param labeled_obs_km: same as above
     :return: prints formatted data to 'clusters.txt'
     """
-    # TODO - what if the k's are different??
 
     s = f"{k}\n"
 
@@ -93,8 +92,8 @@ def visualization_pdf(k, points, kmeans_clusters, spectral_clusters, spcetral_k,
     text_footer += f"The k that was used for: " \
                    f"Spectral - {spcetral_k}, K-means - {k}\n"
     text_footer += f"The Jaccard measure for Spectral Clustering: " \
-                   f"{jaccard_spectral}\n"
-    text_footer += f"The Jaccard measure for K-means: {jaccard_kmeans}"
+                   f"{jaccard_spectral : .5f}\n"
+    text_footer += f"The Jaccard measure for K-means: {jaccard_kmeans : .5f}"
     # figure's prologue
     fig = plt.figure(figsize=(7.5, 6))
     fig.suptitle(title_header, size=30, fontweight='bold')
