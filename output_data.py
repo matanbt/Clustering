@@ -5,10 +5,7 @@ module for post-processing and outputting the results of the run
 
 import matplotlib.pyplot as plt
 import numpy as np
-# TODO filenames to CONFIG.PY
-FNAME_DATA_TXT = "data.txt"
-FNAME_CLUSTERS_TXT = "clusters.txt"
-FNAME_VIS_PDF = "clusters.pdf"
+import config
 
 
 def print_data_txt(obs_lst, centers):
@@ -17,15 +14,12 @@ def print_data_txt(obs_lst, centers):
         :param centers: The REAL center corresponding to each point
         :return: prints formatted data to 'data.txt'
     """
-    # TODO - a design thought: maybe it's better returning a string
-    #                          and the print itself will be done IN MAIN.PY?
-
     n, d = obs_lst.shape
     format_arr = ["%f"] * d + ["%d"]
     output_array = np.empty((n, d + 1))
     output_array[:, :-1] = obs_lst
     output_array[:, -1] = centers
-    np.savetxt(FNAME_DATA_TXT, output_array,
+    np.savetxt(config.FNAME_DATA_TXT, output_array,
                fmt=format_arr, delimiter=',')
 
 
@@ -55,7 +49,7 @@ def print_clusters_txt(k, labeled_obs_nsc, labeled_obs_km):
 
     s += format_clusters(labeled_obs_nsc)
     s += format_clusters(labeled_obs_km)
-    with open(FNAME_CLUSTERS_TXT, "w") as f:
+    with open(config.FNAME_CLUSTERS_TXT, "w") as f:
         f.write(s)
 
 
@@ -122,4 +116,4 @@ def visualization_pdf(k, points, kmeans_clusters, spectral_clusters, spcetral_k,
     # footer text
     fig.text(0.5, 0.15, text_footer, ha='center', size=17)
     # figure's epilogue
-    fig.savefig(FNAME_VIS_PDF)
+    fig.savefig(config.FNAME_VIS_PDF)

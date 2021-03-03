@@ -9,10 +9,7 @@ import numpy as np
 from sklearn.datasets import make_blobs
 
 # TODO: Move this to config.py when it is merged.
-MAX_N_2D_CAPACITY = 200
-MAX_K_2D_CAPACITY = 20
-MAX_N_3D_CAPACITY = 100
-MAX_K_3D_CAPACITY = 10
+import config
 
 
 @dataclass
@@ -71,11 +68,15 @@ def _generate_data_properties(dimensions):
     :return: The generated sample size and centers count.
     """
     if dimensions == 2:
-        n = np.random.randint(MAX_N_2D_CAPACITY // 2, MAX_N_2D_CAPACITY + 1)
-        k = np.random.randint(MAX_K_2D_CAPACITY // 2, MAX_K_2D_CAPACITY + 1)
+        n = np.random.randint(config.MAX_N_2D_CAPACITY // 2,
+                              config.MAX_N_2D_CAPACITY + 1)
+        k = np.random.randint(config.MAX_K_2D_CAPACITY // 2,
+                              config.MAX_K_2D_CAPACITY + 1)
     else:
-        n = np.random.randint(MAX_N_3D_CAPACITY // 2, MAX_N_3D_CAPACITY + 1)
-        k = np.random.randint(MAX_K_3D_CAPACITY // 2, MAX_K_3D_CAPACITY + 1)
+        n = np.random.randint(config.MAX_N_3D_CAPACITY // 2,
+                              config.MAX_N_3D_CAPACITY + 1)
+        k = np.random.randint(config.MAX_K_3D_CAPACITY // 2,
+                              config.MAX_K_3D_CAPACITY + 1)
     return n, k
 
 

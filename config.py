@@ -5,4 +5,12 @@ Includes the constants and the rest of the settings to be used in the project
 
 EPSILON = 0.0001
 MAX_ITER = 300
-max_capacity = None # TODO
+# TODO: Fill me with correct values
+MAX_N_2D_CAPACITY = 200
+MAX_K_2D_CAPACITY = 20
+MAX_N_3D_CAPACITY = 100
+MAX_K_3D_CAPACITY = 10
+
+FNAME_DATA_TXT = "data.txt"
+FNAME_CLUSTERS_TXT = "clusters.txt"
+FNAME_VIS_PDF = "clusters.pdf"
