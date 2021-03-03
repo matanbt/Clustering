@@ -4,15 +4,16 @@
 
 /* Frees a given pointer iff it's not NULL*/
 #define FREE_MEM(mem) if (NULL != (mem)) { free((mem)); }
+#define FREE_ALL_MEM() do{ \
+        free_memory(observations, observations_mem_region, clusters, \
+            clusters_indices, K, 1);} while(0)
 /* Frees all-memory allocated, raises PYTHON_ERROR and returns NULL iff 
  * (=in case) condition HOLDS. */
 #define FREE_ALL_MEM_IN_CASE(cond) do{ \
         if((cond))  { \
-        free_memory(observations, observations_mem_region, clusters, \
-            clusters_indices, K, 1);\
+        FREE_ALL_MEM();\
         return NULL;}} while(0)
 /* Frees all memory */
-#define FREE_ALL_MEM() FREE_ALL_MEM_IN_CASE(1)
 /* Value of an invalid cluster index, used for initializing the observations */
 #define INVALID_CLUSTER (-1)
 
@@ -116,7 +117,7 @@ static int calc_mu(cluster_t * cluster, int d)
  * raises PYTHON_ERROR iff err_flag
  * returns NULL
  */
-static void free_memory(double ** observations, 
+static void free_memory(obs_t * observations, 
                         double * observations_mem_region,
                         cluster_t * clusters, size_t * clusters_indices, 
                         int K, int err_flag)
@@ -131,7 +132,7 @@ static void free_memory(double ** observations,
             FREE_MEM(clusters[i].mu)
             FREE_MEM(clusters[i].obs_array)
         }
-        free(clusters);
+        FREE_MEM(clusters);
     }
     FREE_MEM(clusters_indices)
 
@@ -267,7 +268,7 @@ static errors_t init_observations(PyObject * obs_lst, int N, int d,
     int i = 0;
     int j = 0;
 
-    *observations_mem_region = malloc(N * d, sizeof(**observations_mem_region));
+    *observations_mem_region = malloc(N * d * sizeof(**observations_mem_region));
     *observations = malloc(N * sizeof(**observations));
     if (NULL == *observations_mem_region || NULL == *observations)
     {
@@ -419,7 +420,6 @@ static PyObject * kmeans_api(PyObject * self, PyObject * args)
     obs_t * observations = NULL;
     size_t * clusters_indices = NULL;
     cluster_t * clusters = NULL;
-    int i, j, pos;
     errors_t rc = E_UNINITIALIZED;
 
     /* Processing Arguments */
@@ -436,7 +436,7 @@ static PyObject * kmeans_api(PyObject * self, PyObject * args)
      *                correspondent observation in the memory
      */
     rc = init_observations(obs_lst, N, d, &observations_mem_region, 
-                           &observations)
+                           &observations);
     if (E_SUCCESS != rc)
     {
         FREE_ALL_MEM();
