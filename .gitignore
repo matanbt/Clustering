@@ -1,8 +1,9 @@
 .idea
 docs
-data.txt
 clusters.pdf
 clusters.txt
+data.txt
+
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

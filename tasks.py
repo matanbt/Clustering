@@ -1,18 +1,23 @@
+"""
+----- Tasks -----
+module for invoke tasks
+"""
+
 from invoke import task
 
 
-@task
-def run(c, k, n, Random=False):
+@task(help={'k': "Amount of centers for the generated data",
+            'n': "Amount of points", 'Random': "for randomized points. Default - True"})
+def run(c, k, n, Random=True):
+    """
+    Setup the program and runs main.py with the given parameters
+    """
     c.run("python3.8.5 setup.py build_ext --inplace")
     Random = "--random" if Random else ""
     c.run(f"python3.8.5 main.py {Random} {k} {n}")
-    if not Random:
-        print(f"Clustering with: K={k}, N={n}")
-    else:
-        print(f"Clustering with randomized K,N")
 
 
-# our tasks:
+# tasks for developer purposes:
 @task
 def build(c):
     c.run("python3.8.5 setup.py build_ext --inplace")

@@ -7,38 +7,47 @@ import matplotlib.pyplot as plt
 import numpy as np
 import config
 
-
-def print_data_txt(obs_lst, centers):
+def print_message():
     """
-        :param obs_lst: a numpy-array of points
+    Prints informative message about the maximum capacity that has been calculated
+    """
+    print(f" - Maximum Capacity, 2 Dimensions: n = {config.MAX_N_2D_CAPACITY}, "
+          f"k = {config.MAX_K_2D_CAPACITY}")
+    print(f" - Maximum Capacity, 3 Dimensions: n = {config.MAX_N_3D_CAPACITY}, "
+          f"k = {config.MAX_K_3D_CAPACITY}")
+
+
+def print_data_txt(points, centers):
+    """
+        :param points: a numpy-array of points
         :param centers: The REAL center corresponding to each point
         :return: prints formatted data to 'data.txt'
     """
-    n, d = obs_lst.shape
+    n, d = points.shape
     format_arr = ["%f"] * d + ["%d"]
     output_array = np.empty((n, d + 1))
-    output_array[:, :-1] = obs_lst
+    output_array[:, :-1] = points
     output_array[:, -1] = centers
     np.savetxt(config.FNAME_DATA_TXT, output_array,
                fmt=format_arr, delimiter=',')
 
 
-def print_clusters_txt(k, labeled_obs_nsc, labeled_obs_km):
+def print_clusters_txt(k, spectral_clusters, kmeans_spectral):
     """
-    :param labeled_obs_nsc: gets np-array, in which each index represent an obs
+    :param k: The k given by the user / generated randomly
+    :param spectral_clusters: gets np-array, in which each index represent an obs
                             and each element is its cluster
-    :param labeled_obs_km: same as above
+    :param kmeans_spectral: same as above
     :return: prints formatted data to 'clusters.txt'
     """
-    # TODO - what if the k's are different??
 
     s = f"{k}\n"
 
-    def format_clusters(labeled_obs):
+    def format_clusters(clusters):
         # helper method for formatting the clusters' string
         _s = ""
         clusters_dict = {}
-        for i, cluster in enumerate(labeled_obs):
+        for i, cluster in enumerate(clusters):
             if cluster not in clusters_dict:
                 clusters_dict[cluster] = f"{i},"
             else:
@@ -47,8 +56,8 @@ def print_clusters_txt(k, labeled_obs_nsc, labeled_obs_km):
             _s += line[:-1] + "\n"
         return _s
 
-    s += format_clusters(labeled_obs_nsc)
-    s += format_clusters(labeled_obs_km)
+    s += format_clusters(spectral_clusters)
+    s += format_clusters(kmeans_spectral)
     with open(config.FNAME_CLUSTERS_TXT, "w") as f:
         f.write(s)
 
@@ -74,7 +83,7 @@ def calc_jaccard(centers, clusters):
 def visualization_pdf(k, points, kmeans_clusters, spectral_clusters, spcetral_k,
                       jaccard_spectral, jaccard_kmeans):
     """
-    :param k: the k given by the user / generated randomly
+    :param k: The k given by the user / generated randomly
     :param points: the points generated
     :param kmeans_clusters: clusters computed by KMeans
     :param spectral_clusters: clusters computed by Spectral Cl.
@@ -90,11 +99,10 @@ def visualization_pdf(k, points, kmeans_clusters, spectral_clusters, spcetral_k,
     title_kmeans = 'K-means'
     text_footer = "Data was generated from values:\n"
     text_footer += f"n = {n}, k = {k}\n"
-    text_footer += f"The k that was used for: " \
-                   f"Spectral - {spcetral_k}, K-means - {k}\n"
+    text_footer += f"The k that was used for both algorithms: {spcetral_k}\n "
     text_footer += f"The Jaccard measure for Spectral Clustering: " \
-                   f"{jaccard_spectral}\n"
-    text_footer += f"The Jaccard measure for K-means: {jaccard_kmeans}"
+                   f"{jaccard_spectral : .5f}\n"
+    text_footer += f"The Jaccard measure for K-means: {jaccard_kmeans : .5f}"
     # figure's prologue
     fig = plt.figure(figsize=(7.5, 6))
     fig.suptitle(title_header, size=30, fontweight='bold')
