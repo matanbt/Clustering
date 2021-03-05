@@ -99,8 +99,7 @@ def visualization_pdf(k, points, kmeans_clusters, spectral_clusters, spcetral_k,
     title_kmeans = 'K-means'
     text_footer = "Data was generated from values:\n"
     text_footer += f"n = {n}, k = {k}\n"
-    text_footer += f"The k that was used for: " \
-                   f"Spectral - {spcetral_k}, K-means - {k}\n"
+    text_footer += f"The k that was used for both algorithms: {spcetral_k}\n "
     text_footer += f"The Jaccard measure for Spectral Clustering: " \
                    f"{jaccard_spectral : .5f}\n"
     text_footer += f"The Jaccard measure for K-means: {jaccard_kmeans : .5f}"

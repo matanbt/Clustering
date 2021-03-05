@@ -24,7 +24,7 @@ def main():
                                         None if params.random else params.k)
     spectral_clusters = np.array(spectral_clusters, dtype='float32')
     # KMEANS:
-    kmeans_clusters = kmeans(points, params.k, params.n, params.dim, MAX_ITER)
+    kmeans_clusters = kmeans(points, spectral_k, params.n, params.dim, MAX_ITER)
     kmeans_clusters = np.array(kmeans_clusters, dtype='float32')
     # OUTPUT:
     print_data_txt(points, centers)
