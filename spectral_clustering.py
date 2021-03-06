@@ -22,23 +22,6 @@ def weight_func(x_i, x_j):
 
 def form_weight(x):
     """
-    :param x: an array of n vector from d-dimension; i.e. array of shape (n,d)
-    :return: calculates the connection-weight-matrix of x of shape (n,n)
-    """
-    n = x.shape[0]
-
-    # form Weight Matrix :
-    w = np.zeros((n, n))
-    for i in range(n):
-        for j in range(i + 1, n):
-            w[i, j] = weight_func(x[i], x[j])
-    w = w + w.T  # adds the symmetric upper triangle
-    return w
-
-
-# TODO either optimize the next function or delete it
-def form_weight_np(x):
-    """
     numpy alternative to 'form_Weight' (tested to run *slower* than python)
     """
     n = x.shape[0]
