@@ -22,7 +22,8 @@ def weight_func(x_i, x_j):
 
 def form_weight(x):
     """
-    numpy alternative to 'form_Weight' (tested to run *slower* than python)
+    :param x: an array of n vector from d-dimension; i.e. array of shape (n,d)
+    :return: calculates the connection-weight-matrix of x of shape (n,n)
     """
     n = x.shape[0]
 
