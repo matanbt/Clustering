@@ -8,7 +8,7 @@ import numpy as np
 from linalg import qr_iteration, eigengap_method
 from config import MAX_ITER
 from kmeans_pp import kmeans
-
+from time import time
 
 def weight_func(x_i, x_j):
     """
@@ -29,25 +29,45 @@ def form_weight(x):
 
     # form Weight Matrix :
     w = np.zeros((n, n))
-    for i in range(n):
-        for j in range(i + 1, n):
-            w[i, j] = weight_func(x[i], x[j])
+    u_weight_func = np.frompyfunc(lambda i, j: weight_func(x[i], x[j]), 2, 1)
+    triu1, triu2 = np.triu_indices(n, 1) #7.39ms
+    upper_triangle = u_weight_func(triu1, triu2) #6.09sec!!
+    w[triu1, triu2] = upper_triangle #6ms
     w = w + w.T  # adds the symmetric upper triangle
     return w
 
-
-# TODO either optimize the next function or delete it
-def form_weight_np(x):
+def form_weight_try(x):
     """
-    numpy alternative to 'form_Weight' (tested to run *slower* than python)
+    :param x: an array of n vector from d-dimension; i.e. array of shape (n,d)
+    :return: calculates the connection-weight-matrix of x of shape (n,n)
     """
     n = x.shape[0]
 
     # form Weight Matrix :
     w = np.zeros((n, n))
-    u_weight_func = np.frompyfunc(lambda i, j: weight_func(x[i], x[j]), 2, 1)
+    u_weight_func = np.frompyfunc(lambda i, j: np.linalg.norm(x[i] - x[j]), 2, 1)
+    # u_weight_func - calculates the norm of the difference of i,j
     triu1, triu2 = np.triu_indices(n, 1)
     upper_triangle = u_weight_func(triu1, triu2)
+    upper_triangle = upper_triangle.astype(np.float32, copy=False)
+    np.exp(-0.5 * upper_triangle, out=upper_triangle)
+    w[triu1, triu2] = upper_triangle
+    w = w + w.T  # adds the symmetric upper triangle
+    return w
+
+
+def form_weight_try2(x):
+    """
+    :param x: an array of n vector from d-dimension; i.e. array of shape (n,d)
+    :return: calculates the connection-weight-matrix of x of shape (n,n)
+    """
+    n = x.shape[0]
+
+    # form Weight Matrix :
+    w = np.zeros((n, n), dtype=np.float32)
+    triu1, triu2 = np.triu_indices(n, 1)
+    upper_triangle = np.linalg.norm(x[triu1] - x[triu2], axis=1)
+    np.exp(-0.5 * upper_triangle, out=upper_triangle)
     w[triu1, triu2] = upper_triangle
     w = w + w.T  # adds the symmetric upper triangle
     return w
@@ -76,10 +96,15 @@ def form_u(l, k=None):
              determined by EigenGap
             (U is of shape (n,k), each column is a chosen eigen-vector)
     """
-
+    t0 = time()
     e_values, e_vectors = qr_iteration(l)
+    t1 = time()
+    print(f"5 qr [nsc] ti_{(t1 - t0) :.10f}")
+    t0 = time()
     k_indices = eigengap_method(e_values, k)
     u = e_vectors[:, k_indices]
+    t1 = time()
+    print(f"6 egap [nsc] ti_{(t1 - t0) :.10f}")
     return u
 
 
@@ -98,14 +123,25 @@ def run_nsc(points, k=None):
              k - the calculated / given k (depends on the input k)
     """
     # Phase 1:
+    t0 = time()
     w = form_weight(points)
+    t1 = time()
+    print(f"3 rweight [nsc] ti_{(t1 - t0) :.10f}")
+
     # Phase 2:
+    t0 = time()
     l = form_laplacian(w)
+    t1 = time()
+    print(f"4 laplacian [nsc] ti_{(t1 - t0) :.10f}")
     # Phase 3&4:
     u = form_u(l, k)
     # Phase 5
+    t0 = time()
     t = form_t(u)
     n, k = t.shape
+    t1 = time()
+    print(f"7 t [nsc] ti_{(t1 - t0) :.10f}")
     # Phase 6&7
+    print("_ kmeans [nsc]:")
     res = kmeans(points=t, K=k, N=n, d=k, MAX_ITER=MAX_ITER)
     return res, k

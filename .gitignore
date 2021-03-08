@@ -3,7 +3,9 @@ docs
 clusters.pdf
 clusters.txt
 data.txt
-
+*.txt
+*.csv
+*.pdf
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

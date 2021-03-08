@@ -5,7 +5,7 @@ K-MEANS-PP ALGORITHM IMPLEMENTATION
 import argparse
 import pandas as pd
 import numpy as np
-
+from time import time
 import mykmeanssp as km
 
 
@@ -44,8 +44,17 @@ def kmeans(points, K, N, d, MAX_ITER):
     """
     TODO
     """
+    t0 = time()
     indices = k_means_pp(K, points)
+    t1 = time()
+    print(f"1 pp [kmeans] ti_{(t1 - t0) :.10f}")
+    t0 = time()
     c_points = convert_obs_to_c(points)
     indices = indices.tolist()
+    t1 = time()
+    print(f"2 prep_c [kmeans] ti_{(t1 - t0) :.10f}")
+    t0 = time()
     clusters = km.kmeans(c_points, indices, K, N, d, MAX_ITER)
+    t1 = time()
+    print(f"3 c [kmeans] ti_{(t1 - t0) :.10f}")
     return clusters
