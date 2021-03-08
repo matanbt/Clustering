@@ -19,13 +19,14 @@ def main():
     if not user_input.check_user_input(args):
         return None
     params, points, centers = user_input.generate_points(args)
+    points = points.astype(np.float32, copy=False)
     # NSC:
     spectral_clusters, spectral_k = nsc(points,
                                         None if params.random else params.k)
-    spectral_clusters = np.array(spectral_clusters, dtype='float32')
+    spectral_clusters = spectral_clusters.astype(np.float32, copy=False)
     # KMEANS:
     kmeans_clusters = kmeans(points, spectral_k, params.n, params.dim, MAX_ITER)
-    kmeans_clusters = np.array(kmeans_clusters, dtype='float32')
+    kmeans_clusters = kmeans_clusters.astype(np.float32, copy=False)
     # OUTPUT:
     print_data_txt(points, centers)
     print_clusters_txt(params.k, spectral_clusters, kmeans_clusters)
