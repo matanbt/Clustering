@@ -2,22 +2,24 @@
 
 /*================================ MACROS ==================================*/
 
-/* Frees a given pointer iff it's not NULL*/
+/* Frees a given pointer iff it's not NULL */
 #define FREE_MEM(mem) if (NULL != (mem)) { free((mem)); }
+/* Frees all of the memory the program allocated */
 #define FREE_ALL_MEM() do{ \
         free_memory(observations, observations_mem_region, clusters, \
-            clusters_indices, K, 1);} while(0)
+            clusters_indices, K, 1);} while(0);
 /* Frees all-memory allocated, raises PYTHON_ERROR and returns NULL iff 
  * (=in case) condition HOLDS. */
 #define FREE_ALL_MEM_IN_CASE(cond) do{ \
         if((cond))  { \
         FREE_ALL_MEM();\
-        return NULL;}} while(0)
-/* Frees all memory */
+        return NULL;}} while(0);
+
 /* Value of an invalid cluster index, used for initializing the observations */
 #define INVALID_CLUSTER (-1)
 
 /*================================ ENUMS ===================================*/
+
 /* An enum that describes the different errors of this program */
 typedef enum errors_e
 {
@@ -28,7 +30,9 @@ typedef enum errors_e
     E_UNINITIALIZED = -1
 } errors_t;
 
-/*============================ General Helpers ==============================*/
+/*=============================== STRUCTS ==================================*/
+
+/* A struct that holds data related to the clusters */
 typedef struct cluster_s
 {
     /*
@@ -42,7 +46,7 @@ typedef struct cluster_s
     int len;
 } cluster_t;
 
-
+/* A struct that holds data related to each observation */
 typedef struct obs_s
 {
     /*
@@ -53,10 +57,127 @@ typedef struct obs_s
     int cluster_index;
 } obs_t;
 
+/*======================== FUNCTION DECLARATIONS ===========================*/
+/*
+ * Calculates the squared euclidean distance between 2 points.
+ * @param p: First point
+ * @param q: Second point
+ * @param d: Dimension of points
+ * @returns: the squared euclidean distance between the points.
+ */
+static double euclidean_distance(const double * p, const double * q, int d);
 
 /*
- * Calculates the squared euclidean distance between 2 points and returns it.
+ * Calculates MU and changes it in-place.
+ * @param cluster: The cluster that we want to calculate its new MU
+ * @param d: Dimension of points in the cluster
+ * @param did_cluster_change: Will be 1 if MU changed, 0 otherwise.
+ * @returns: E_SUCCESS on success, otherwise return the relevant error code.
  */
+static errors_t calc_mu(cluster_t * cluster, int d, int * did_cluster_change);
+
+/*
+ * Frees the memory of the program,
+ * @param observations: The observations array
+ * @param observations_mem_region: The memory region the observations use
+ * @param clusters: The clusters array
+ * @param clusters_indices: The clusters indices array
+ * @param K: Number of clusters we have
+ */
+static void free_memory(obs_t * observations,
+                        double * observations_mem_region,
+                        cluster_t * clusters, size_t * clusters_indices,
+                        int K, int err_flag);
+
+/*
+ * Allocates memory for the clusters and initialize them.
+ * @param observations: The observations array
+ * @param clusters_indices: The rray of indices of the chosen observations to be 
+ *                           clusters
+ * @param N: Number of observations
+ * @param K: Number of clusters
+ * @param d: Dimension of points in the clusters
+ * @param clusters: Will contain the new clusters array
+ * @returns: E_SUCCESS on success, otherwise return the relevant error code.
+ * @note: If an error occurred, there is no need to free the clusters, the
+ *        function does that.
+ */
+static errors_t build_clusters(obs_t * observations, 
+                               const size_t * clusters_indices, int N, 
+                               int K, int d, cluster_t ** clusters);
+
+/*
+ * Implementation of the KMeans algorithm.
+ * @param observations: Array of the observations
+ * @param clusters: Array of the clusters
+ * @param d: Dimension of points of the observations and clusters
+ * @param K: Number of clusters
+ * @param N: Number of observations
+ * @param MAX_ITER: Maximum times the algorithm will iterate over the clusters
+ * @returns: E_SUCCESS on sucess, otherwise return the relevant error code.
+ */
+static errors_t kmeans_impl(obs_t * observations, cluster_t * clusters, int d, 
+                            int K, int N, int MAX_ITER);
+
+/*
+ * Initializes the observations array, passed from Python.
+ * @param obs_lst: Python's list of observations
+ * @param N: Number of observations
+ * @param d: Dimension of each point in the observations
+ * @param observations_mem_region: will contain the entire memory region of the
+ *                                  observations
+ * @param observations: will contain the observations array
+ * @return E_SUCCESS on success, otherwise return the relevant error code. Also,
+ *  both on success and on failure, both pointers of observations can be
+ *  allocated, so the user should free them in the calling function.
+ */
+static errors_t init_observations(PyObject * obs_lst, int N, int d, 
+                                  double ** observations_mem_region, 
+                                  obs_t ** observations);
+
+/*
+ * Initializes the cluster indices array, passed from Python.
+ * @param indices_lst: Python's list of clusters indices
+ * @param K: Number of clusters
+ * @param clusters_indices: will contain the array of cluters indices
+ * @return E_SUCCESS on success, otherwise return the relevant error code. Also,
+ *  both on success and on failure, clusters_indices can be allocated, so the 
+ *  user should free it in the calling function.
+ */
+static errors_t init_cluster_indices(PyObject * indices_lst, int K, 
+                                     size_t ** clusters_indices);
+
+/*
+ * Convert the results from a C array to Python's list
+ * @param clusters_lst: will contain the results as Python's list
+ * @param N: Number of observations
+ * @param observations: the observations and their cluster indices
+ * @return E_SUCCESS on success, otherwise return the relevant error code.
+ */
+static errors_t convert_result_clusters(PyObject ** clusters_lst, int N, 
+                                        obs_t * observations);
+
+/*
+ * Convert the error code to the relevant error message in Python.
+ * @param rc: The C error code
+ * @returns: Always NULL.
+ */
+static PyObject * error_msg(errors_t rc);
+
+/*
+ * K-Means(observations, centroids_indices, K, N, d, MAX_ITER)
+ * gets 6 positional arguments:
+ * @param 1: observations: N-sized List with D-sized tuples (with float values)
+ * @param 2: centroids_indices: K-sized List of indices (integer) indicates the 
+ *                              chosen observations from the list above
+ * @params 3-6: K,N,d,MAX_ITER: k-means algorithm arguments
+ * @precondition: input is valid
+ * @return N-sized list, where each element maps between the observation and its
+ *  cluster index. On error, return NULL
+ */
+static PyObject * kmeans_api(PyObject * self, PyObject * args);
+
+/*=============================== FUNCTIONS ================================*/
 static double euclidean_distance(const double * p, const double * q, int d)
 {
     double dis = 0;
@@ -70,22 +191,16 @@ static double euclidean_distance(const double * p, const double * q, int d)
     return dis;
 }
 
-/*
- * calculates the MU and changes it inplace
- * returns 1 if mu changed in the process, -1 if error occurred
- */
-static int calc_mu(cluster_t * cluster, int d)
+static errors_t calc_mu(cluster_t * cluster, int d, int * did_cluster_change)
 {
     double * new_mu = NULL;
-    int did_cluster_change = 0;
     int i = 0;
     int j = 0;
 
     new_mu = calloc(d, sizeof(*new_mu));
     if (NULL == new_mu)
     {
-        PyErr_Format(PyExc_MemoryError, "Memory Allocation Error");
-        return -1;
+        return E_NO_MEMORY;
     }
 
 
@@ -98,25 +213,20 @@ static int calc_mu(cluster_t * cluster, int d)
     }
 
     /*checks if change has happened:*/
-    did_cluster_change = 0;
+    *did_cluster_change = 0;
     for (j = 0; j < d; j++)
     {
         if (new_mu[j] != cluster->mu[j])
         {
-            did_cluster_change = 1;
+            *did_cluster_change = 1;
             break;
         }
     }
     free(cluster->mu);
     cluster->mu = new_mu;
-    return did_cluster_change;
+    return E_SUCCESS;
 }
 
-/*
- * frees ALL given pointers
- * raises PYTHON_ERROR iff err_flag
- * returns NULL
- */
 static void free_memory(obs_t * observations, 
                         double * observations_mem_region,
                         cluster_t * clusters, size_t * clusters_indices, 
@@ -143,62 +253,57 @@ static void free_memory(obs_t * observations,
     }
 }
 
-/*========================== Data Structuring Helpers ========================*/
-
-/*
- * @param observations - array of observations
- * @param clusters_indices - array of indices of the chosen observations to be 
- *                           clusters
- * builds an array of cluster_t from the given observations indices
- */
-static cluster_t * build_clusters(obs_t * observations, 
-                                  const size_t * clusters_indices, int N, 
-                                  int K, int d)
+static errors_t build_clusters(obs_t * observations, 
+                               const size_t * clusters_indices, int N, 
+                               int K, int d, cluster_t ** clusters)
 {
     int i = 0;
     int j = 0;
-    cluster_t * clusters = malloc(sizeof(*clusters) * K);
+
+    /* Allocate memory for the clusters array */
+    cluster_t * temp_clust = calloc(K, sizeof(*clusters));
     if (NULL == clusters)
     {
-        PyErr_Format(PyExc_MemoryError, "Memory Allocation Error");
-        return NULL;
+        return E_NO_MEMORY;
     }
 
     for (i = 0; i < K; i++)
     {
-        clusters[i].mu = malloc(d * sizeof(*clusters[i].mu));
-        clusters[i].obs_array = malloc(N * sizeof(*clusters[i].obs_array));
-        if (NULL == clusters[i].mu || NULL == clusters[i].obs_array)
+        temp_clust[i].mu = calloc(d, sizeof(*temp_clust[i].mu));
+        temp_clust[i].obs_array = calloc(N, sizeof(*temp_clust[i].obs_array));
+        if (NULL == temp_clust[i].mu || NULL == temp_clust[i].obs_array)
         {
-            PyErr_Format(PyExc_MemoryError, "Memory Allocation Error");
-            return NULL;
+            /* Free memory in case of an error */
+            for (j = 0; j < i; j++)
+            {
+                FREE_MEM(temp_clust[j].mu);
+                FREE_MEM(temp_clust[i].obs_array);
+            }
+            FREE_MEM(temp_clust);
+            return E_NO_MEMORY;
         }
 
         for (j = 0; j < d; j++)
         {
-            /* copies the clusters_indices[i] observation to be the MU */
-            clusters[i].mu[j] = observations[clusters_indices[i]].data[j];
+            /* Copy the clusters_indices[i] observation to be MU */
+            temp_clust[i].mu[j] = observations[cluster_indices[i]].data[j];
         }
     }
 
-    return clusters;
+    /* Success - return the new clusters array */
+    *clusters = temp_clust;
+    return E_SUCCESS;
 }
 
-/*================== KMeans Original Implementation ===================*/
-/*
- * K-Means Implementation
- * @param observations - each pointer, points to the correspondent observation 
- *                       in the memory (observation = d-size array)
- * @param clusters - array of initialized-clusters
- * @return - changes 'clusters' array IN-PLACE, returns 0 iff no errors
- */
-static int kmeans_impl(obs_t * observations, cluster_t * clusters, int d, 
-                       int K, int N, int MAX_ITER)
+static errors_t kmeans_impl(obs_t * observations, cluster_t * clusters, int d, 
+                            int K, int N, int MAX_ITER)
 {
     int did_cluster_change = 1;
+    int cluster_change_status = 0;
     int iter_count = 0;
     int i = 0;
     int j = 0;
+    errors_t rc = E_UNINITIALIZED;
 
     while ((1 == did_cluster_change) && (iter_count < MAX_ITER))
     {
@@ -227,7 +332,7 @@ static int kmeans_impl(obs_t * observations, cluster_t * clusters, int d,
                 }
             }
 
-            /* append observation pointer to the closest cluster */
+            /* Append observation pointer to the closest cluster */
             pos = clusters[closest_cluster].len;
             clusters[closest_cluster].obs_array[pos] = observations[i].data;
             clusters[closest_cluster].len++;
@@ -238,29 +343,23 @@ static int kmeans_impl(obs_t * observations, cluster_t * clusters, int d,
         did_cluster_change = 0;
         for (i = 0; i < K; i++)
         {
-            int cluster_change = calc_mu(&clusters[i], d);
-            if (cluster_change < 0)
-                return -1;
-            else if (1 == cluster_change)
+            rc = calc_mu(&clusters[i], d, &cluster_change_status);
+            if (E_SUCCESS != rc)
+            {
+                return rc;
+            }
+            else if (1 == cluster_change_status)
+            {
                 did_cluster_change = 1;
+            }
         }
         iter_count += 1;
     }
 
-    return 0; /* ran without errors */
+    return E_SUCCESS;
 }
 
 /*========================= Python Integration ============================*/
-/*
- * Initializes the observations array, passed from Python.
- * @param obs_lst - Python's list of observations
- * @param observations_mem_region - will contain the entire memory region of the
- *                                  observations
- * @param observations - will contain the observations array
- * @return E_SUCCESS on success, otherwise return the relevant error code. Also,
- *  both on success and on failure, both pointers of observations can be
- *  allocated, so the user should free them in the calling function.
- */
 static errors_t init_observations(PyObject * obs_lst, int N, int d, 
                                   double ** observations_mem_region, 
                                   obs_t ** observations)
@@ -308,15 +407,6 @@ static errors_t init_observations(PyObject * obs_lst, int N, int d,
     return E_SUCCESS;
 }
 
-/*
- * Initializes the cluster indices array, passed from Python.
- * @param indices_lst - Python's list of clusters indices
- * @param clusters_indices - will contain the array of cluters indices
- * @return E_SUCCESS on success, otherwise return the relevant error code. Also,
- *  both on success and on failure, clusters_indices can be allocated, so the 
- *  user should free it in the calling function.
- */
-
 static errors_t init_cluster_indices(PyObject * indices_lst, int K, 
                                      size_t ** clusters_indices)
 {
@@ -346,12 +436,6 @@ static errors_t init_cluster_indices(PyObject * indices_lst, int K,
     return E_SUCCESS;
 }
 
-/*
- * Convert the results from a C array to Python's list
- * @param clusters_lst - will contain the results as Python's list
- * @param observations - the observations and their cluster indices
- * @return E_SUCCESS on success, otherwise return the relevant error code.
- */
 static errors_t convert_result_clusters(PyObject ** clusters_lst, int N, 
                                         obs_t * observations)
 {
@@ -376,9 +460,6 @@ static errors_t convert_result_clusters(PyObject ** clusters_lst, int N,
     return E_SUCCESS;
 }
 
-/*
- * Convert the error code to the relevant error message in Python
- */
 static PyObject * error_msg(errors_t rc)
 {
     switch (rc)
@@ -396,18 +477,6 @@ static PyObject * error_msg(errors_t rc)
         return PyErr_Format(PyExc_ValueError, "Unknown Error");
     }
 }
-
-/*
- * K-Means(observations, centroids_indices, K, N, d, MAX_ITER)
- * gets 6 positional arguments:
- * @param 1: observations: N-sized List with D-sized tuples (with float values)
- * @param 2: centroids_indices: K-sized List of indices (integer) indicates the 
- *                              chosen observations from the list above
- * @params 3-6: K,N,d,MAX_ITER: k-means algorithm arguments
- * @precondition: input is valid
- * @return N-sized list, where each element maps between the observation and its
- *  cluster index. On error, return NULL
- */
 
 static PyObject * kmeans_api(PyObject * self, PyObject * args)
 {
