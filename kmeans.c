@@ -8,13 +8,8 @@
 #define FREE_ALL_MEM() do{ \
         free_memory(observations, observations_mem_region, clusters, \
             clusters_indices, K, 1);} while(0);
-/* Frees all-memory allocated, raises PYTHON_ERROR and returns NULL iff 
- * (=in case) condition HOLDS. */
-#define FREE_ALL_MEM_IN_CASE(cond) do{ \
-        if((cond))  { \
-        FREE_ALL_MEM();\
-        return NULL;}} while(0);
-
+/* Fail the program and free memory if condition `cond` happens */
+#define FAIL_IF (cond) if ((cond)) { FREE_ALL_MEM(); return error_msg(rc); }
 /* Value of an invalid cluster index, used for initializing the observations */
 #define INVALID_CLUSTER (-1)
 
@@ -304,6 +299,7 @@ static errors_t init_cluster_indices(PyObject * indices_lst, int K,
     
     return E_SUCCESS;
 }
+
 static errors_t build_clusters(obs_t * observations, 
                                const size_t * clusters_indices, int N, 
                                int K, int d, cluster_t ** clusters)
@@ -478,7 +474,6 @@ static void free_memory(obs_t * observations,
     }
 }
 
-
 static PyObject * kmeans_api(PyObject * self, PyObject * args)
 {
     /* Process and validate arguments */
@@ -507,38 +502,25 @@ static PyObject * kmeans_api(PyObject * self, PyObject * args)
      */
     rc = init_observations(obs_lst, N, d, &observations_mem_region, 
                            &observations);
-    if (E_SUCCESS != rc)
-    {
-        FREE_ALL_MEM();
-        return error_msg(rc);
-    }
-
+    
     /* Process Indices: python's indices_lst ---> clusters_indices */
     rc = init_cluster_indices(indices_lst, K, &clusters_indices);
-    if (E_SUCCESS != rc)
-    {
-        FREE_ALL_MEM();
-        return error_msg(rc);
-    }
+    FAIL_IF(E_SUCCESS != rc);
 
     /* Build Clusters from given indices */
     /* TODO: Should this be converted to the format of init_cluster_indices above or not? */
     /* TODO: Should we just use PyErr_Format and drop the enum? */
-    clusters = build_clusters(observations, clusters_indices, N, K, d);
-    FREE_ALL_MEM_IN_CASE(NULL == clusters);
+    rc = build_clusters(observations, clusters_indices, N, K, d, &clusters);
+    FAIL_IF(E_SUCCESS != rc);
 
     /* Runs K-Means Implementation, it will mutate 'clusters' array 
      * (breaks program if it raised an error */
-    FREE_ALL_MEM_IN_CASE(kmeans_impl(observations, clusters, d, K, 
-                                     N, MAX_ITER) < 0);
+    rc = kmeans_impl(observations, clusters, d, K, N, MAX_ITER);
+    FAIL_IF(E_SUCCESS != rc);
 
     /* pack clusters_lst to python-list */
     rc = convert_result_clusters(&clusters_lst, N, observations);
-    if (rc != E_SUCCESS)
-    {
-        FREE_ALL_MEM();
-        return error_msg(rc);
-    }
+    FAIL_IF(E_SUCCESS != rc);
 
     /* Free all memory */
     free_memory(observations, observations_mem_region, clusters, 
