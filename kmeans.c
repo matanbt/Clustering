@@ -10,7 +10,7 @@
         free_memory(observations, observations_mem_region, clusters, \
             clusters_indices, K, 1);} while(0);
 /* Fail the program and free memory if condition `cond` happens */
-#define FAIL_IF (cond) if ((cond)) { FREE_ALL_MEM(); return error_msg(rc); }
+#define FAIL_IF(cond) if ((cond)) { FREE_ALL_MEM(); return error_msg(rc); }
 /* Value of an invalid cluster index, used for initializing the observations */
 #define INVALID_CLUSTER (-1)
 /* How accurate the equals sign will be */
@@ -336,7 +336,7 @@ static errors_t build_clusters(obs_t * observations,
         for (j = 0; j < d; j++)
         {
             /* Copy the clusters_indices[i] observation to be MU */
-            temp_clust[i].mu[j] = observations[cluster_indices[i]].data[j];
+            temp_clust[i].mu[j] = observations[clusters_indices[i]].data[j];
         }
     }
 
