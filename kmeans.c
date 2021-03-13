@@ -8,7 +8,7 @@
 /* Frees all of the memory the program allocated */
 #define FREE_ALL_MEM() do{ \
         free_memory(observations, observations_mem_region, clusters, \
-            clusters_indices, K, 1);} while(0);
+            clusters_indices, K);} while(0);
 /* Fail the program and free memory if condition `cond` happens */
 #define FAIL_IF(cond) if ((cond)) { FREE_ALL_MEM(); return error_msg(rc); }
 /* Value of an invalid cluster index, used for initializing the observations */
@@ -160,8 +160,7 @@ static PyObject * error_msg(errors_t rc);
  */
 static void free_memory(obs_t * observations,
                         double * observations_mem_region,
-                        cluster_t * clusters, size_t * clusters_indices,
-                        int K, int err_flag);
+                        cluster_t * clusters, size_t * clusters_indices, int K);
 
 /*
  * K-Means(observations, centroids_indices, K, N, d, MAX_ITER)
@@ -453,28 +452,21 @@ static PyObject * error_msg(errors_t rc)
 
 static void free_memory(obs_t * observations, 
                         double * observations_mem_region,
-                        cluster_t * clusters, size_t * clusters_indices, 
-                        int K, int err_flag)
+                        cluster_t * clusters, size_t * clusters_indices, int K)
 {
-    FREE_MEM(observations_mem_region)
-    FREE_MEM(observations)
+    FREE_MEM(observations_mem_region);
+    FREE_MEM(observations);
     if (NULL != clusters)
     {
         int i = 0;
         for (i = 0; i < K; ++i)
         {
-            FREE_MEM(clusters[i].mu)
-            FREE_MEM(clusters[i].obs_array)
+            FREE_MEM(clusters[i].mu);
+            FREE_MEM(clusters[i].obs_array);
         }
         FREE_MEM(clusters);
     }
-    FREE_MEM(clusters_indices)
-
-    /* raises error if needed */
-    if (err_flag)
-    {
-        PyErr_Format(PyExc_RuntimeError, "Exception while running K-Means++");
-    }
+    FREE_MEM(clusters_indices);
 }
 
 static PyObject * kmeans_api(PyObject * self, PyObject * args)
@@ -526,7 +518,7 @@ static PyObject * kmeans_api(PyObject * self, PyObject * args)
 
     /* Free all memory */
     free_memory(observations, observations_mem_region, clusters, 
-                clusters_indices, K, 0);
+                clusters_indices, K);
     return clusters_lst;
 }
 
