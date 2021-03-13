@@ -1,4 +1,5 @@
 #include <Python.h>
+#include <math.h>
 
 /*================================ MACROS ==================================*/
 
@@ -12,6 +13,8 @@
 #define FAIL_IF (cond) if ((cond)) { FREE_ALL_MEM(); return error_msg(rc); }
 /* Value of an invalid cluster index, used for initializing the observations */
 #define INVALID_CLUSTER (-1)
+/* How accurate the equals sign will be */
+#define EPSILON (0.0001)
 
 /*================================ ENUMS ===================================*/
 
@@ -213,7 +216,7 @@ static errors_t calc_mu(cluster_t * cluster, int d, int * did_cluster_change)
     *did_cluster_change = 0;
     for (j = 0; j < d; j++)
     {
-        if (new_mu[j] != cluster->mu[j])
+        if (abs(new_mu[j] - cluster->mu[j]) < EPSILON)
         {
             *did_cluster_change = 1;
             break;
@@ -251,7 +254,7 @@ static errors_t init_observations(PyObject * obs_lst, int N, int d,
         }
         for (j = 0; j < d; j++)
         {
-            PyObject * o_val = PyTuple_GetItem(obs_vector, j);
+            PyObject * o_val = PyList_GetItem(obs_vector, j);
             if (NULL == o_val)
             {
                 return E_INVALID_INDEX;
