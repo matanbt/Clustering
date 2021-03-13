@@ -311,7 +311,7 @@ static errors_t build_clusters(obs_t * observations,
     int j = 0;
 
     /* Allocate memory for the clusters array */
-    cluster_t * temp_clust = calloc(K, sizeof(*clusters));
+    cluster_t * temp_clust = calloc(K, sizeof(*temp_clust));
     if (NULL == clusters)
     {
         return E_NO_MEMORY;
@@ -505,14 +505,13 @@ static PyObject * kmeans_api(PyObject * self, PyObject * args)
      */
     rc = init_observations(obs_lst, N, d, &observations_mem_region, 
                            &observations);
+    FAIL_IF(E_SUCCESS != rc);
     
     /* Process Indices: python's indices_lst ---> clusters_indices */
     rc = init_cluster_indices(indices_lst, K, &clusters_indices);
     FAIL_IF(E_SUCCESS != rc);
 
     /* Build Clusters from given indices */
-    /* TODO: Should this be converted to the format of init_cluster_indices above or not? */
-    /* TODO: Should we just use PyErr_Format and drop the enum? */
     rc = build_clusters(observations, clusters_indices, N, K, d, &clusters);
     FAIL_IF(E_SUCCESS != rc);
 
