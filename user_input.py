@@ -8,7 +8,6 @@ from dataclasses import dataclass
 import numpy as np
 from sklearn.datasets import make_blobs
 
-# TODO: Move this to config.py when it is merged.
 import config
 
 

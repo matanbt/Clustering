@@ -18,7 +18,6 @@ def gram_schmidt(mat_a):
     # pseudo code for clarity
     rows_count = mat_a.shape[0]
 
-    # TODO: Check how much does the order of the matrix matters ('C' or 'F')
     u = mat_a.copy()
     r = np.zeros_like(u)
     q = np.zeros_like(u)
