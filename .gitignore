@@ -1,8 +1,12 @@
-.idea
 docs
 clusters.pdf
 clusters.txt
 data.txt
+
+__pycache__
+.idea
+*.pyd
+cmake-build-debug
 
 
 # Byte-compiled / optimized / DLL files
