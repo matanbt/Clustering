@@ -6,6 +6,8 @@ import sys
 import matplotlib.pyplot as plt
 from time import time
 
+import spectral_clustering as nsc
+
 REPEAT = 5
 REF_K ,REF_N = 350, 800
 
@@ -97,6 +99,10 @@ def bottle_neck(n=REF_N, k=REF_K, repeat=REPEAT):
     fig.savefig("times.pdf")
     print(f"For n={n}, k={k}, took {np.sum(avg_times) / 60}")
 
+# TIME MEASURES ON TXT FILES:
+def time_weight_by_txt(txt_name):
+    x = np.genfromtxt(txt_name, delimiter=',')
+    avg_time = timeit(lambda: nsc.form_weight(x), number=REPEAT) / REPEAT
 
 # ---- FILES PROCESSING / VISUALIZATION HELPERS -----
 def heatmap():

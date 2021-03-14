@@ -10,53 +10,8 @@ from config import MAX_ITER
 from kmeans_pp import kmeans
 from time import time
 
-def weight_func(x_i, x_j):
-    """
-    Calculates the Weight of connection of 2 given vectors
-    :param x_i, x_j: d-dimensioned vectors
-    :return: calculates the weight of connection between x_i to x_j
-    """
-    diff_vector = x_i - x_j
-    return np.exp(-0.5 * np.linalg.norm(diff_vector))
-
 
 def form_weight(x):
-    """
-    :param x: an array of n vector from d-dimension; i.e. array of shape (n,d)
-    :return: calculates the connection-weight-matrix of x of shape (n,n)
-    """
-    n = x.shape[0]
-
-    # form Weight Matrix :
-    w = np.zeros((n, n))
-    u_weight_func = np.frompyfunc(lambda i, j: weight_func(x[i], x[j]), 2, 1)
-    triu1, triu2 = np.triu_indices(n, 1) #7.39ms
-    upper_triangle = u_weight_func(triu1, triu2) #6.09sec!!
-    w[triu1, triu2] = upper_triangle #6ms
-    w = w + w.T  # adds the symmetric upper triangle
-    return w
-
-def form_weight_try(x):
-    """
-    :param x: an array of n vector from d-dimension; i.e. array of shape (n,d)
-    :return: calculates the connection-weight-matrix of x of shape (n,n)
-    """
-    n = x.shape[0]
-
-    # form Weight Matrix :
-    w = np.zeros((n, n))
-    u_weight_func = np.frompyfunc(lambda i, j: np.linalg.norm(x[i] - x[j]), 2, 1)
-    # u_weight_func - calculates the norm of the difference of i,j
-    triu1, triu2 = np.triu_indices(n, 1)
-    upper_triangle = u_weight_func(triu1, triu2)
-    upper_triangle = upper_triangle.astype(np.float32, copy=False)
-    np.exp(-0.5 * upper_triangle, out=upper_triangle)
-    w[triu1, triu2] = upper_triangle
-    w = w + w.T  # adds the symmetric upper triangle
-    return w
-
-
-def form_weight_try2(x):
     """
     :param x: an array of n vector from d-dimension; i.e. array of shape (n,d)
     :return: calculates the connection-weight-matrix of x of shape (n,n)
