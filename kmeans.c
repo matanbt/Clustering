@@ -95,7 +95,7 @@ static errors_t init_observations(PyObject * obs_lst, int N, int d,
  * Initializes the cluster indices array, passed from Python.
  * @param indices_lst: Python's list of clusters indices
  * @param K: Number of clusters
- * @param clusters_indices: will contain the array of cluters indices
+ * @param clusters_indices: will contain the array of clusters indices
  * @return E_SUCCESS on success, otherwise return the relevant error code. Also,
  *  both on success and on failure, clusters_indices can be allocated, so the 
  *  user should free it in the calling function.
@@ -106,7 +106,7 @@ static errors_t init_cluster_indices(PyObject * indices_lst, int K,
 /*
  * Allocates memory for the clusters and initialize them.
  * @param observations: The observations array
- * @param clusters_indices: The rray of indices of the chosen observations to be 
+ * @param clusters_indices: The array of indices of the chosen observations to be
  *                           clusters
  * @param N: Number of observations
  * @param K: Number of clusters
@@ -128,7 +128,7 @@ static errors_t build_clusters(obs_t * observations,
  * @param K: Number of clusters
  * @param N: Number of observations
  * @param MAX_ITER: Maximum times the algorithm will iterate over the clusters
- * @returns: E_SUCCESS on sucess, otherwise return the relevant error code.
+ * @returns: E_SUCCESS on success, otherwise return the relevant error code.
  */
 static errors_t kmeans_impl(obs_t * observations, cluster_t * clusters, int d, 
                             int K, int N, int MAX_ITER);
@@ -181,7 +181,6 @@ static double euclidean_distance(const double * p, const double * q, int d)
 {
     double dis = 0;
     int i = 0;
-    dis = 0;
 
     for (i = 0; i < d; i++)
     {
