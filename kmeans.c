@@ -21,10 +21,17 @@
 /* An enum that describes the different errors of this program */
 typedef enum errors_e
 {
+    /* Success */
     E_SUCCESS = 0,
+    /* Failed to allocate memory */
     E_NO_MEMORY,
+    /* Accessing invalid index in a list */
     E_INVALID_INDEX,
+    /* Trying to parse a bad value */
     E_BAD_VALUE,
+    /* Invalid input from the caller of this module */
+    E_INVALID_INPUT,
+    /* Internal value, used to represent an uninitialized result variables */
     E_UNINITIALIZED = -1
 } errors_t;
 
@@ -411,6 +418,7 @@ static errors_t convert_result_clusters(PyObject ** clusters_lst, int N,
                                         obs_t * observations)
 {
     int i = 0;
+    PyObject * val = NULL;
 
     *clusters_lst = PyList_New(N);
     if (NULL == *clusters_lst)
@@ -420,11 +428,16 @@ static errors_t convert_result_clusters(PyObject ** clusters_lst, int N,
 
     for (i = 0; i < N; i++)
     {
-        if (PyList_SetItem(*clusters_lst, i, 
-                           PyLong_FromLong(observations[i].cluster_index)) < 0)
+        val = PyLong_FromLong(observations[i].cluster_index);
+        if (NULL == val)
         {
             Py_DecRef(*clusters_lst);
             return E_BAD_VALUE;
+        }
+        if (PyList_SetItem(*clusters_lst, i, val) < 0)
+        {
+            Py_DecRef(*clusters_lst);
+            return E_INVALID_INDEX;
         }
     }
 
@@ -436,16 +449,19 @@ static PyObject * error_msg(errors_t rc)
     switch (rc)
     {
     case E_NO_MEMORY:
-        return PyErr_Format(PyExc_MemoryError, "Memory Allocation Error");
+        return PyErr_Format(PyExc_MemoryError, "Memory allocation error");
         break;
     case E_INVALID_INDEX:
-        return PyErr_Format(PyExc_ValueError, "Invalid Index");
+        return PyErr_Format(PyExc_IndexError, "Invalid list index");
         break;
     case E_BAD_VALUE:
-        return PyErr_Format(PyExc_ValueError, "Bad value");
+        return PyErr_Format(PyExc_ValueError, "Couldn't parse given value");
+        break;
+    case E_INVALID_INPUT:
+        return PyErr_Format(PyExc_ValueError, "Invalid input from the user");
         break;
     default:
-        return PyErr_Format(PyExc_ValueError, "Unknown Error");
+        return PyErr_Format(PyExc_Exception, "Unknown error");
     }
 }
 
@@ -484,9 +500,15 @@ static PyObject * kmeans_api(PyObject * self, PyObject * args)
     /* Processing Arguments */
     if (!PyArg_ParseTuple(args, "OOiiii; Expected args are: observations, centers indices, K, N, d, MAX_ITER",
                           &obs_lst, &indices_lst, &K, &N, &d, &MAX_ITER))
-        return PyErr_Format(PyExc_ValueError, "Input is not valid");
+    {
+        rc = E_INVALID_INPUT;
+        return error_msg(rc);
+    }
     if (!PyList_Check(obs_lst) || !PyList_Check(indices_lst))
-        return PyErr_Format(PyExc_ValueError, "Input is not valid");
+    {
+        rc = E_INVALID_INPUT;
+        return error_msg(rc);
+    }
 
     /*
      * Process Observations: python's obs_lst ---> observations_mem_region
