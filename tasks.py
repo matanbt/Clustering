@@ -39,7 +39,8 @@ def time_with_seed(c, _n, _k, _d):
                                               random_state=random_state)
     run_clustering(params, points, centers)
     t1 = time()
-    print(f"n={_n}, k={_k}")
+    print(f"n={_n}, k={_k}, d={_d}, took: {t1-t0} secs")
+
 
 @task
 def build(c):

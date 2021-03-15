@@ -28,7 +28,7 @@ def run_clustering(params, points, centers):
     kmeans_clusters = kmeans_clusters.astype(np.float32, copy=False)
     # OUTPUT:
     print_data_txt(points, centers)
-    print_clusters_txt(params.k, spectral_clusters, kmeans_clusters)
+    print_clusters_txt(spectral_k, spectral_clusters, kmeans_clusters)
     spectral_jaccard = calc_jaccard(centers, spectral_clusters)
     kmeans_jaccard = calc_jaccard(centers, kmeans_clusters)
     visualization_pdf(params.k, points, kmeans_clusters, spectral_clusters,
