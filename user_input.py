@@ -72,7 +72,7 @@ def _generate_data_properties(dimensions):
                               config.MAX_N_2D_CAPACITY + 1)
         k = np.random.randint(config.MAX_K_2D_CAPACITY // 2,
                               config.MAX_K_2D_CAPACITY + 1)
-    else:
+    else: # dimensions == 3
         n = np.random.randint(config.MAX_N_3D_CAPACITY // 2,
                               config.MAX_N_3D_CAPACITY + 1)
         k = np.random.randint(config.MAX_K_3D_CAPACITY // 2,
@@ -80,20 +80,25 @@ def _generate_data_properties(dimensions):
     return n, k
 
 
-def generate_points(args):
+def generate_points(args, dimensions=None, random_state=None):
     """
     Generate the points that the program will use.
     :param args: The arguments of the program.
+    :param dimensions: sets the dimensions, if None choose randomly from {2,3}
+    :param random_state: random-seed to deliver make_blobs API. None means random.
     :return: A dataclass that will hold all of the parameters of this program's
     run - (N, K, Dimensions, Random), the points, and the clusters they belong
     to.
     """
-    dimensions = np.random.choice([2, 3])
+    if dimensions is None:
+        dimensions = np.random.choice([2, 3])
+
     if not args.random:
         n, k = args.n, args.k
     else:
         n, k = _generate_data_properties(dimensions)
 
     params = ProgramParams(n, k, dimensions, args.random)
-    points, centers = make_blobs(params.n, params.dim, centers=params.k)
+    points, centers = make_blobs(params.n, params.dim, centers=params.k,
+                                 random_state=random_state)
     return params, points, centers

@@ -11,14 +11,13 @@ from output_data import print_data_txt, print_clusters_txt, \
 from config import MAX_ITER
 
 
-def main():
-    # PRINTS INFORMATIVE MESSAGE:
-    print_message()
-    # PROCESS PARAMETERS:
-    args = user_input.get_args()
-    if not user_input.check_user_input(args):
-        return None
-    params, points, centers = user_input.generate_points(args)
+def run_clustering(params, points, centers):
+    """
+    Runs the clustering algorithms on a given data {params, points, centers}.
+    Can be used as an imported module.
+    :return: saves data to `data.txt`, results to `clusters.txt`
+             and visualization to `clusters.pdf`
+    """
     points = points.astype(np.float32, copy=False)
     # NSC:
     spectral_clusters, spectral_k = nsc(points,
@@ -34,6 +33,21 @@ def main():
     kmeans_jaccard = calc_jaccard(centers, kmeans_clusters)
     visualization_pdf(params.k, points, kmeans_clusters, spectral_clusters,
                       spectral_k, spectral_jaccard, kmeans_jaccard)
+
+
+def main():
+    """
+    main function, intended when called as a script
+    """
+    # PRINTS INFORMATIVE MESSAGE:
+    print_message()
+    # PROCESS PARAMETERS:
+    args = user_input.get_args()
+    if not user_input.check_user_input(args):
+        return None
+    params, points, centers = user_input.generate_points(args)
+    # RUNS CLUSTERING, SAVES RESULTS FILES
+    run_clustering(params, points, centers)
 
 
 if __name__ == '__main__':
