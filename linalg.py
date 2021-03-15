@@ -26,9 +26,15 @@ def gram_schmidt(mat_a):
         r[i, i] = np.linalg.norm(u_i)
         q[:, i] = u_i / r[i, i]
         q_i = q[:, i]
-        for j in range(i + 1, rows_count):
-            r[i, j] = q_i.T.dot(u[:, j])
-            u[:, j] -= r[i, j] * q_i
+
+        # Linear algebra magic: In order to efficiently reduce the q_i vector
+        # from each column, proportional to R_ij, we create the appropriate
+        # column operations matrix (Multiplying by left, is like performing
+        # column operations). This way, the resulting matrix would be columns
+        # of R_ij * Q_i, as needed.
+        r[i, i + 1:] = q_i.T.dot(u[:, i + 1:])
+        cols = np.repeat(q_i[:, np.newaxis], rows_count - (i + 1), 1)
+        u[:, i + 1:] -= cols.dot(np.diag(r[i, i + 1:]))
 
     return q, r
 
