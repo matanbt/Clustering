@@ -27,14 +27,10 @@ def gram_schmidt(mat_a):
         q[:, i] = u_i / r[i, i] if r[i, i] != 0 else np.zeros(rows_count)
         q_i = q[:, i]
 
-        # Linear algebra magic: In order to efficiently reduce the q_i vector
-        # from each column, proportional to R_ij, we create the appropriate
-        # column operations matrix (Multiplying by left, is like performing
-        # column operations). This way, the resulting matrix would be columns
-        # of R_ij * Q_i, as needed.
         r[i, i + 1:] = q_i.T.dot(u[:, i + 1:])
-        cols = np.repeat(q_i[:, np.newaxis], rows_count - (i + 1), 1)
-        u[:, i + 1:] -= cols.dot(np.diag(r[i, i + 1:]))
+        # np.outer will multiply q_i by each number in r[i, i + 1:], and create
+        # a matrix that each column is a result of that multiplication
+        u[:, i + 1:] -= np.outer(q_i, r[i, i + 1:])
 
     return q, r
 
