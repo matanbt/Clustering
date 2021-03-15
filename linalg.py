@@ -55,8 +55,7 @@ def qr_iteration(a):
     delta_matrix = np.empty((n, n))
 
     for i in range(n):
-        # q, r = gram_schmidt(a_)
-        q, r = np.linalg.qr(a_)
+        q, r = gram_schmidt(a_)
         np.matmul(r, q, out=a_)
         np.matmul(q_, q, out=temp_q)
         np.subtract(np.abs(q_), np.abs(temp_q), out=delta_matrix)
