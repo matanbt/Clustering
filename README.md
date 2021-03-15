@@ -1,4 +1,4 @@
-# Clustering Algorithms
+# Clustering Algorithms - KMeans, Spectral Clustering
 
 ## Description
 Pure Implementations of the popular **Clustering algorithms** - Kmeans and the 
