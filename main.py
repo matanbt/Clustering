@@ -23,13 +23,13 @@ def main():
     # NSC:
     spectral_clusters, spectral_k = nsc(points,
                                         None if params.random else params.k)
-    spectral_clusters = spectral_clusters.astype(np.float32, copy=False)
+    spectral_clusters = np.array(spectral_clusters, dtype=np.float32)
     # KMEANS:
     kmeans_clusters = kmeans(points, spectral_k, params.n, params.dim, MAX_ITER)
-    kmeans_clusters = kmeans_clusters.astype(np.float32, copy=False)
+    kmeans_clusters = np.array(kmeans_clusters, dtype=np.float32)
     # OUTPUT:
     print_data_txt(points, centers)
-    print_clusters_txt(params.k, spectral_clusters, kmeans_clusters)
+    print_clusters_txt(spectral_k, spectral_clusters, kmeans_clusters)
     spectral_jaccard = calc_jaccard(centers, spectral_clusters)
     kmeans_jaccard = calc_jaccard(centers, kmeans_clusters)
     visualization_pdf(params.k, points, kmeans_clusters, spectral_clusters,

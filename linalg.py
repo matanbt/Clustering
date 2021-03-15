@@ -24,7 +24,7 @@ def gram_schmidt(mat_a):
     for i in range(rows_count):
         u_i = u[:, i]
         r[i, i] = np.linalg.norm(u_i)
-        q[:, i] = u_i / r[i, i]
+        q[:, i] = u_i / r[i, i] if r[i, i] != 0 else np.zeros(rows_count)
         q_i = q[:, i]
 
         # Linear algebra magic: In order to efficiently reduce the q_i vector
