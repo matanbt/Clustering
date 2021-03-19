@@ -28,18 +28,9 @@ def k_means_pp(k, obs_arr):
         last_index = np.random.choice(N, p=probs)
         initial_indices[i] = last_index
         new_distances = np.linalg.norm(obs_arr - obs_arr[last_index], axis=1)
-        minimal_distances = np.minimum(minimal_distances, new_distances)
+        np.minimum(minimal_distances, new_distances, out=minimal_distances)
 
     return initial_indices
-
-
-def convert_obs_to_c(obs_arr):
-    """
-    Convert Numpy's array to a list of lists, for usage by the C API.
-    :param obs_arr: Observations
-    :return: Converted observations
-    """
-    return [list(obs) for obs in obs_arr]
 
 
 def kmeans(points, K, N, d, MAX_ITER):
@@ -53,7 +44,7 @@ def kmeans(points, K, N, d, MAX_ITER):
     :return: The cluster of each observation, as a list.
     """
     indices = k_means_pp(K, points)
-    c_points = convert_obs_to_c(points)
+    c_points = points.tolist()
     indices = indices.tolist()
     clusters = km.kmeans(c_points, indices, K, N, d, MAX_ITER)
     return clusters
