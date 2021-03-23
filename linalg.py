@@ -18,18 +18,19 @@ def gram_schmidt(mat_a):
     # pseudo code for clarity
     rows_count = mat_a.shape[0]
 
-    # TODO: Check how much does the order of the matrix matters ('C' or 'F')
     u = mat_a.copy()
     r = np.zeros_like(u)
     q = np.zeros_like(u)
     for i in range(rows_count):
         u_i = u[:, i]
         r[i, i] = np.linalg.norm(u_i)
-        q[:, i] = u_i / r[i, i]
+        q[:, i] = u_i / r[i, i] if r[i, i] != 0 else 0
         q_i = q[:, i]
-        for j in range(i + 1, rows_count):
-            r[i, j] = q_i.T.dot(u[:, j])
-            u[:, j] -= r[i, j] * q_i
+
+        r[i, i + 1:] = q_i.T.dot(u[:, i + 1:])
+        # np.outer will multiply q_i by each number in r[i, i + 1:], and create
+        # a matrix that each column is a result of that multiplication
+        u[:, i + 1:] -= np.outer(q_i, r[i, i + 1:])
 
     return q, r
 
@@ -50,8 +51,7 @@ def qr_iteration(a):
     delta_matrix = np.empty((n, n))
 
     for i in range(n):
-        # q, r = gram_schmidt(a_)
-        q, r = np.linalg.qr(a_)
+        q, r = gram_schmidt(a_)
         np.matmul(r, q, out=a_)
         np.matmul(q_, q, out=temp_q)
         np.subtract(np.abs(q_), np.abs(temp_q), out=delta_matrix)

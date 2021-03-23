@@ -4,15 +4,6 @@ import linalg
 
 
 class TestGS:
-    def test_invalid_matrix(self):
-        with pytest.raises(ValueError):
-            a = np.empty((4, 3))
-            a[0] = [1, -1, 4]
-            a[1] = [1, 4, -2]
-            a[2] = [1, 4, 2]
-            a[3] = [1, -1, 0]
-            linalg.gram_schmidt(a)
-
     def test_matrix_3_3_float(self):
         a = np.empty((3, 3))
         a[0] = [2.11, 2.79, 3.72]
