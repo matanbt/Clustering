@@ -59,6 +59,10 @@ def form_u(l, k=None):
 
 
 def form_t(u):
+    """
+    :param u: U matrix
+    :return: T matrix, which normalized each of U’s rows to have unit length
+    """
     t = u / np.linalg.norm(u, axis=1, keepdims=True)
     return t
 
