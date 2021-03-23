@@ -5,7 +5,7 @@ module for invoke tasks
 
 from invoke import task
 
-
+# ============ Official Tasks (UI): ============
 @task(help={'k': "Amount of centers for the generated data",
             'n': "Amount of points", 'Random': "for randomized points. Default - True"})
 def run(c, k, n, Random=True):
@@ -15,6 +15,22 @@ def run(c, k, n, Random=True):
     c.run("python3.8.5 setup.py build_ext --inplace")
     Random = "--random" if Random else ""
     c.run(f"python3.8.5 main.py {Random} {k} {n}")
+
+
+# ============ Utilities: ============
+@task
+def build(c):
+    c.run("python3.8.5 setup.py build_ext --inplace")
+
+
+@task(aliases=["del"])
+def delete(c):
+    c.run("rm *mykmeanssp*.so")
+
+
+@task
+def clean(c):
+    c.run("rm data.txt clusters.txt clusters.pdf")
 
 
 # ============ Tasks for developer purposes: ============
@@ -40,17 +56,3 @@ def time_with_seed(c, _n, _k, _d):
     run_clustering(params, points, centers)
     t1 = time()
     print(f"n={_n}, k={_k}, d={_d}, took: {t1-t0} secs")
-
-
-@task
-def build(c):
-    c.run("python3.8.5 setup.py build_ext --inplace")
-
-
-@task(aliases=["del"])
-def delete(c):
-    c.run("rm *mykmeanssp*.so")
-
-@task
-def clean(c):
-    c.run("rm data.txt clusters.txt clusters.pdf")
