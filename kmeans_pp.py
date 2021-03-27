@@ -3,9 +3,9 @@ K-MEANS-PP ALGORITHM IMPLEMENTATION
 """
 
 import numpy as np
-from config import KMEANS_INIT_RANDOM_SEED
 import mykmeanssp as km
 
+KMEANS_INIT_RANDOM_SEED = 0
 
 def k_means_pp(k, obs_arr):
     """
@@ -31,6 +31,7 @@ def k_means_pp(k, obs_arr):
         new_distances = np.linalg.norm(obs_arr - obs_arr[last_index], axis=1)
         np.minimum(minimal_distances, new_distances, out=minimal_distances)
 
+    # Resetting numpy's random seed
     np.random.seed(None)
     return initial_indices
 

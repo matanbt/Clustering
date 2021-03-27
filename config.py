@@ -6,7 +6,6 @@ Includes the constants and the rest of the settings to be used in the project
 # Global Program Constants
 EPSILON = 0.0001
 MAX_ITER = 300
-KMEANS_INIT_RANDOM_SEED = 0
 
 # Program Performance Limits
 # TODO: Fill me with correct values
