@@ -1,4 +1,3 @@
-docs
 clusters.pdf
 clusters.txt
 data.txt
@@ -45,7 +44,6 @@ MANIFEST
 cmake-build-debug
 .idea
 CMakeLists.txt
-docs
 
 # Pyre type checker
 .pyre/
