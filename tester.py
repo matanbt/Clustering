@@ -9,7 +9,7 @@ from time import time
 import spectral_clustering as nsc
 
 REPEAT = 5
-REF_K ,REF_N = 350, 800
+REF_K ,REF_N = 350, 200
 
 # ------------- HELPERS --------------:
 def avg(n1, n2):
@@ -83,8 +83,8 @@ def bottle_neck(n=REF_N, k=REF_K, repeat=REPEAT):
         _, t, total_time = time_phases(n,k)
         total_time_sum += total_time
         avg_times += t
-        print(f"total={total_time}, sum_phases={np.sum(t)}")
-    print(f"FOR N={n}, K={k}, took: {total_time_sum / repeat}")
+        # print(f"total={total_time}, sum_phases={np.sum(t)}")
+    print(f"AVERAGE RUNTIME: N={n}, K={k}, took: {total_time_sum / repeat / 60} mins")
     avg_times = avg_times / repeat
     fig, ax = plt.subplots()
     titles_lst = [f"{i}{title}" for i, title in enumerate(titles_lst)]
@@ -96,8 +96,8 @@ def bottle_neck(n=REF_N, k=REF_K, repeat=REPEAT):
                     va='center', xytext=(0, 5), textcoords='offset points',
                     fontsize=4)
     plt.xticks(fontsize=4)
-    fig.savefig("times.pdf")
-    print(f"For n={n}, k={k}, took {np.sum(avg_times) / 60}")
+    fig.savefig("bottle_neck_plot.pdf")
+    print("Saved: bottle_neck_plot.pdf")
 
 # TIME MEASURES ON TXT FILES:
 def time_weight_by_txt(txt_name):

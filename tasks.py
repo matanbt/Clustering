@@ -77,3 +77,10 @@ def time_func(c, func_name, input_file):
     print(f"-- {func_name} ran for {avg_time} secs")
     print("-- res:")
     print(func(x))
+
+@task
+def bottle_neck(c, n, k, repeat=3):
+    from tester import bottle_neck
+    print("Bottle Neck Check...")
+    bottle_neck(n, k, repeat)
+    print("... Finished Bottle Neck Check!")

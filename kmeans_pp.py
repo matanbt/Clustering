@@ -4,7 +4,7 @@ K-MEANS-PP ALGORITHM IMPLEMENTATION
 
 import numpy as np
 import mykmeanssp as km
-
+from time import time
 KMEANS_INIT_RANDOM_SEED = 0
 
 def k_means_pp(k, obs_arr):
