@@ -2,18 +2,20 @@
 K-MEANS-PP ALGORITHM IMPLEMENTATION
 """
 
-import argparse
-import pandas as pd
 import numpy as np
-from time import time
 import mykmeanssp as km
 
+KMEANS_INIT_RANDOM_SEED = 0
 
 def k_means_pp(k, obs_arr):
     """
-    TODO
+    The initialization part of the KMeans++ algorithm.
+    :param k: Number of clusters
+    :param obs_arr: Observations array
+    :return: The indices of the observations to initialize the KMeans clusters
+    with.
     """
-    np.random.seed(0)
+    np.random.seed(KMEANS_INIT_RANDOM_SEED)
 
     N = len(obs_arr)
     initial_indices = np.empty(k, dtype=int)
@@ -21,39 +23,36 @@ def k_means_pp(k, obs_arr):
     last_index = np.random.choice(N)
     initial_indices[0] = last_index
     minimal_distances = np.linalg.norm(obs_arr - obs_arr[last_index], axis=1)
+    probs = np.empty_like(minimal_distances)
     for i in range(1, k):
-        probs = minimal_distances / minimal_distances.sum()
+        np.divide(minimal_distances, minimal_distances.sum(), out=probs)
         last_index = np.random.choice(N, p=probs)
         initial_indices[i] = last_index
         new_distances = np.linalg.norm(obs_arr - obs_arr[last_index], axis=1)
-        minimal_distances = np.minimum(minimal_distances, new_distances)
+        np.minimum(minimal_distances, new_distances, out=minimal_distances)
 
+    # Resetting numpy's random seed
+    np.random.seed(None)
     return initial_indices
-
-
-def convert_obs_to_c(obs_arr):
-    """
-    Convert Numpy's array to a list of tuples, for usage by the C API.
-    :param obs_arr: Observations.
-    :return: Converted observations.
-    """
-    return [tuple(obs) for obs in obs_arr]
 
 
 def kmeans(points, K, N, d, MAX_ITER):
     """
-    TODO
+    Run the KMeans algorithm (wrapper for the C extension module).
+    :param points: Observation points
+    :param K: Number of clusters
+    :param N: Number of observations
+    :param d: Dimensions of points
+    :param MAX_ITER: Maximum iterations for the KMeans algorithm
+    :return: The cluster of each observation, as a list.
     """
     t0 = time()
     indices = k_means_pp(K, points)
     t1 = time()
     print(f"1 pp [kmeans] ti_{(t1 - t0) :.10f}")
     t0 = time()
-    c_points = convert_obs_to_c(points)
+    c_points = points.tolist()
     indices = indices.tolist()
-    t1 = time()
-    print(f"2 prep_c [kmeans] ti_{(t1 - t0) :.10f}")
-    t0 = time()
     clusters = km.kmeans(c_points, indices, K, N, d, MAX_ITER)
     t1 = time()
     print(f"3 c [kmeans] ti_{(t1 - t0) :.10f}")

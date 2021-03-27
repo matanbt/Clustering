@@ -1,11 +1,16 @@
-.idea
-docs
 clusters.pdf
 clusters.txt
 data.txt
 *.txt
 *.csv
 *.pdf
+
+
+__pycache__
+.idea
+*.pyd
+cmake-build-debug
+
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
@@ -43,7 +48,6 @@ MANIFEST
 cmake-build-debug
 .idea
 CMakeLists.txt
-docs
 
 # Pyre type checker
 .pyre/

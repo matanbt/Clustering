@@ -7,6 +7,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import config
 
+
 def print_message():
     """
     Prints informative message about the maximum capacity that has been calculated

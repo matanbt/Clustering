@@ -7,6 +7,8 @@ from invoke import task
 import numpy as np
 from timeit import timeit
 
+
+# ============ Official Tasks (UI): ============
 @task(help={'k': "Amount of centers for the generated data",
             'n': "Amount of points", 'Random': "for randomized points. Default - True"})
 def run(c, k, n, Random=True):
@@ -18,8 +20,48 @@ def run(c, k, n, Random=True):
     c.run(f"python3.8.5 main.py {Random} {k} {n}")
 
 
-# tasks for developer purposes:
-# TESTERS / TIMERS :
+
+
+# ============ Utilities: ============
+@task
+def build(c):
+    c.run("python3.8.5 setup.py build_ext --inplace")
+
+
+@task(aliases=["del"])
+def delete(c):
+    c.run("rm *mykmeanssp*.so")
+
+
+@task
+def clean(c):
+    c.run("rm data.txt clusters.txt clusters.pdf")
+
+
+# ============ Tasks for developer purposes: ============
+from time import time
+
+@task
+def time_with_seed(c, _n, _k, _d):
+    """
+    times non-random case, with given n, k, d
+    """
+    random_state = 0  # SEED TO SET
+    from user_input import generate_points
+    from main import run_clustering
+
+    class args:
+        n = _n
+        k = _k
+        random = False
+
+    t0 = time()
+    params, points, centers = generate_points(args, dimensions=_d,
+                                              random_state=random_state)
+    run_clustering(params, points, centers)
+    t1 = time()
+    print(f"n={_n}, k={_k}, d={_d}, took: {t1-t0} secs")
+
 
 REPEAT = 5
 
@@ -35,16 +77,3 @@ def time_func(c, func_name, input_file):
     print(f"-- {func_name} ran for {avg_time} secs")
     print("-- res:")
     print(func(x))
-
-@task
-def build(c):
-    c.run("python3.8.5 setup.py build_ext --inplace")
-
-
-@task(aliases=["del"])
-def delete(c):
-    c.run("rm *mykmeanssp*.so")
-
-@task
-def clean(c):
-    c.run("rm data.txt clusters.txt clusters.pdf")

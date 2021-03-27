@@ -21,6 +21,7 @@ def form_weight(x):
     # form Weight Matrix :
     w = np.zeros((n, n), dtype=np.float32)
     triu1, triu2 = np.triu_indices(n, 1)
+    # for each i<j calculates the norm of the difference between x[i], x[j]
     upper_triangle = np.linalg.norm(x[triu1] - x[triu2], axis=1)
     np.exp(-0.5 * upper_triangle, out=upper_triangle)
     w[triu1, triu2] = upper_triangle
@@ -64,6 +65,10 @@ def form_u(l, k=None):
 
 
 def form_t(u):
+    """
+    :param u: U matrix
+    :return: T matrix, which normalized each of U’s rows to have unit length
+    """
     t = u / np.linalg.norm(u, axis=1, keepdims=True)
     return t
 
