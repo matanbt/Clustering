@@ -66,20 +66,16 @@ def _generate_data_properties(dimensions):
     :param dimensions: The dimensions of each point in the data - 2D or 3D.
     :return: The generated sample size and centers count.
     """
-    top_n_value = config.MAX_N_2D_CAPACITY if dimensions == 2 else \
-        config.MAX_N_3D_CAPACITY
-    bottom_n_value = top_n_value // 2
-    top_n_value += 1
-    n = np.random.randint(bottom_n_value, top_n_value)
-
-    top_k_value = config.MAX_K_2D_CAPACITY if dimensions == 2 else \
-        config.MAX_K_3D_CAPACITY
-    if n <= top_k_value:
-        # We put n-1 so it will choose randomly from [bottom_k, n)
-        top_k_value = n - 1
-    bottom_k_value = top_k_value // 2
-    top_k_value += 1
-    k = np.random.randint(bottom_k_value, top_k_value)
+    if dimensions == 2:
+        n = np.random.randint(config.MAX_N_2D_CAPACITY // 2,
+                              config.MAX_N_2D_CAPACITY + 1)
+        k = np.random.randint(config.MAX_K_2D_CAPACITY // 2,
+                              min(config.MAX_K_2D_CAPACITY + 1, n))
+    else: # dimensions == 3
+        n = np.random.randint(config.MAX_N_3D_CAPACITY // 2,
+                              config.MAX_N_3D_CAPACITY + 1)
+        k = np.random.randint(config.MAX_K_3D_CAPACITY // 2,
+                              min(config.MAX_K_3D_CAPACITY + 1, n))
 
     return n, k
 
