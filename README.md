@@ -15,7 +15,7 @@ Was written as a final project for Software Project course.
 ## Demo:
   Visualization created by `$python main.py 5 100`:
 
-  <img src="https://github.com/matanbt/final-project/blob/master/docs/demo.png" width='500px'>
+  <img src="https://github.com/matanbt/final-project/blob/master/Docs/demo.png" width='500px'>
 
 
 ## Files and Modules
