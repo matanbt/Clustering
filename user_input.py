@@ -70,12 +70,13 @@ def _generate_data_properties(dimensions):
         n = np.random.randint(config.MAX_N_2D_CAPACITY // 2,
                               config.MAX_N_2D_CAPACITY + 1)
         k = np.random.randint(config.MAX_K_2D_CAPACITY // 2,
-                              config.MAX_K_2D_CAPACITY + 1)
+                              min(config.MAX_K_2D_CAPACITY + 1, n))
     else: # dimensions == 3
         n = np.random.randint(config.MAX_N_3D_CAPACITY // 2,
                               config.MAX_N_3D_CAPACITY + 1)
         k = np.random.randint(config.MAX_K_3D_CAPACITY // 2,
-                              config.MAX_K_3D_CAPACITY + 1)
+                              min(config.MAX_K_3D_CAPACITY + 1, n))
+
     return n, k
 
 
