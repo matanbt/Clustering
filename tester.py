@@ -96,6 +96,8 @@ def bottle_neck(n=REF_N, k=REF_K, repeat=REPEAT):
                     va='center', xytext=(0, 5), textcoords='offset points',
                     fontsize=4)
     plt.xticks(fontsize=4)
+    plt.title(f"N={n}, K={k}, Repeats={repeat} | "
+              f"Total Time Avg: {total_time_sum / repeat / 60} mins")
     fig.savefig("bottle_neck_plot.pdf")
     print("Saved: bottle_neck_plot.pdf")
 
