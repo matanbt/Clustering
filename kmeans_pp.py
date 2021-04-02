@@ -7,6 +7,7 @@ import mykmeanssp as km
 
 KMEANS_INIT_RANDOM_SEED = 0
 
+
 def k_means_pp(k, obs_arr):
     """
     The initialization part of the KMeans++ algorithm.

@@ -50,7 +50,5 @@ def main():
     run_clustering(params, points, centers)
 
 
-
-
 if __name__ == '__main__':
     main()

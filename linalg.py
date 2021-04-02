@@ -39,7 +39,7 @@ def qr_iteration(a):
     """
     QR Iteration Algorithm for finding EigenValues and EigenVectors
     :param a: 2-D ndarray, with shape (n,n)
-    :precondition: input is valid, a is from type 'float64'
+    :precondition: input is valid, a is from type 'float'
     :return: a_ - diagonal matrix with a's approximated eigenvalues
              q_ - orthogonal matrix, each column is approximated eigenvector of a
     """
@@ -70,7 +70,7 @@ def eigengap_method(a_, k=None):
     :param k: if k is not None - skips k-calculation and forces it to be the given k
               Note: this option effectively cancels the eigengap method.
     :return: array of the 'first' K *indices* of the appropriate eigenvectors
-             Note: the calculated K is the length of the returned array, which
+             Note: the calculated K is the length of the returned array, which is
                    determined  by the eigengap method
              Note 2: assumption is that the original order is valuable, hence
                      its indices are to be returned
