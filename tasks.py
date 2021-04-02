@@ -8,7 +8,7 @@ from invoke import task
 # ============ Official Tasks (UI): ============
 @task(help={'k': "Amount of centers for the generated data",
             'n': "Amount of points", 'Random': "for randomized points. Default - True"})
-def run(c, k, n, Random=True):
+def run(c, k=0, n=0, Random=True):
     """
     Setup the program and runs main.py with the given parameters
     """
