@@ -36,12 +36,14 @@ def clean(c):
 # ============ Tasks for developer purposes: ============
 from time import time
 
+REPEAT = 3
+RANDOM_STATE = 0  # SEED TO SET
+
 @task
 def time_with_seed(c, _n, _k, _d):
     """
     times non-random case, with given n, k, d
     """
-    random_state = 0  # SEED TO SET
     from user_input import generate_points
     from main import run_clustering
 
@@ -52,7 +54,24 @@ def time_with_seed(c, _n, _k, _d):
 
     t0 = time()
     params, points, centers = generate_points(args, dimensions=_d,
-                                              random_state=random_state)
+                                              random_state=RANDOM_STATE)
     run_clustering(params, points, centers)
     t1 = time()
-    print(f"n={_n}, k={_k}, d={_d}, took: {t1-t0} secs")
+    print(f"n={_n}, k={_k}, d={_d}, took: {t1 - t0} secs")
+    return t1 - t0
+
+
+def time_comparisons_with_seed(c):
+    """
+    runs time_with_seed for bunch of tests
+    """
+    comparisons_list = [
+        # n,   k,  d
+        (470, 200, 2),
+        (470, 200, 3),
+        (312, 215, 2),
+        (350, 159, 3),
+        (400, 159, 3),
+    ]
+    for n, k, d in comparisons_list:
+        time_with_seed(c, n, k, d)
