@@ -49,7 +49,6 @@ def test__qr():
     a2_, q2_ = la.qr_iteration(a2)
     assert np.allclose(abs(q2_), abs(expected_q2_), atol=EPSILON)
     assert np.allclose(abs(a2_), abs(expected_a2_), atol=EPSILON)
-    # TODO compare results with others, emphasis on sign difference
     print("TESTED QR ITER SUCCESSFULLY")
 
 def test__eigengap():

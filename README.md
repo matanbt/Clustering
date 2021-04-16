@@ -13,13 +13,20 @@ Was written as a final project for Software Project course.
 
   
 ## Demo:
-  Visualization created by `$python main.py 5 100`:
-
+Visualization created by `$python main.py 5 100`:
+  
   <img src="https://github.com/matanbt/final-project/blob/master/Docs/demo.png" width='500px'>
 
 
 ## Files and Modules
- - **main.py:** TODO
+* **config.py:** Program's configurations and constants.
+* **kmeans.c:** CAPI extension of the KMeans algorithm.
+* **kmeans_pp.py:** KMeans++ initialization algorithm, and caller of the CAPI module.
+* **linalg.py:** Various linear algebra calculations.
+* **main.py:** The main module of the program. Glues everything together.
+* **output_data.py:** Outputs the final results to the output files.
+* **spectral_clustering.py:** Spectral clustering algorithm.
+* **user_input.py:** Handles the input from the user.
 
 
 ## Usage
@@ -51,12 +58,3 @@ Was written as a final project for Software Project course.
         `main.run_clustering(params, points, centers)`
       
     - **Note:** When not given, the dimension *d* will be cast from {2,3}
-    
-
-### Usage 2 - Handy Modules Utilization:
-   - #### Description:
-   - #### Run Options:
-   - TODO
-
-  
-
