@@ -58,16 +58,19 @@ Visualization created by `$ python main.py 5 100`:
      The **later k lines** shows the indices as above by Kmeans.
    - `clusters.pdf` - provides a visualization of the clustering, as well as results summary and score for each clustering.
  - #### Run Options:
-    - `$ python main.py 0 0 --random` - casts *n*, *k* to generate data with, 
+    - `$ python main.py 0 0 --random` : casts *n*, *k* to generate data with, 
       then calculates *heuristic-k* using Eigengap Method and uses *this* k to run the clustering algorithms.
-    - `$ python main.py {k} {n}` - when {k}, {n} to be replaced with integers indicates the desired values of k and n.
+    - `$ python main.py {k} {n}` : when {k}, {n} to be replaced with integers indicates the desired values of k and n.
     generates data and clusters using the given k and n.
-    - **With given data** - one can provide an object of `params`, 
+    - **Using Invoke:** With `$ python -m invoke run {k} {n} {--Random || --no-Random}`, 
+      following the same logic for `main.py` arguments.
+    - **With given TXT:** Use `$ python -m invoke run {fname} {k} {--random || --no-random}`, to cluster a specific data-set given by the txt file`fname`. 
+    - **With given Data** : one can provide an object of `params`, 
       matrix of `points` , array of `centers` and run *Full Demo* using the following Python line: 
       
         `main.run_clustering(params, points, centers)`
-   - **Note:** One can also use `$ python -m invoke run ...`  with similar arguments. This command will also call `build` before running the *Full Demonstration*.
       
+
     - **Note:** When not given, the dimension *d* will be cast from {2,3}
    
 ## Max Capacities and Where To Find Them

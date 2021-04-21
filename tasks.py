@@ -11,7 +11,7 @@ from invoke import task
             'Random': "For randomized n, k. Default - True"})
 def run(c, k=0, n=0, Random=True):
     """
-    Setup the program and runs main.py with the given parameters
+    Setup the program and Runs main.py with the given parameters
     """
     c.run("python3.8.5 setup.py build_ext --inplace")
     Random = "--random" if Random else ""
@@ -34,9 +34,34 @@ def clean(c):
     c.run("rm data.txt clusters.txt clusters.pdf")
 
 
+@task(help={'fname': "Path of the txt containing the data points and centers",
+            'k': "K used to create the data",
+            'random': "Will use k from eigengap heuristic"})
+def run_from_txt(c, fname, k, random=True):
+    """
+    run the program and cluster the data-set given in 'fname'
+    """
+    import numpy as np
+    from main import run_clustering
+    # parameters:
+    _k = int(k)
+    _random = bool(random)
+    # get data from txt:
+    data = np.genfromtxt(fname, delimiter=',', dtype=np.float64)
+    centers = data[:, -1].astype(np.int32)
+    points = data[:, :-1]
+
+    class args:
+        n = data.shape[0]
+        dim = points.shape[1]
+        k = _k
+        random = _random
+
+    run_clustering(args, points, centers)
+
+
 # ============ Tasks for developer purposes: ============
 from time import time
-import numpy as np
 
 REPEAT = 3
 RANDOM_STATE = 0  # SEED TO SET
@@ -84,17 +109,3 @@ def time_comparisons_with_seed(c):
             sum_runs += time_with_seed(c, n, k, d)
         print(f"AVERAGE TIME : n={n}, k={k}, d={d} --> {sum_runs / REPEAT} secs")
 
-@task
-def test_from_txt(txt_fname="shir-data-n400k10.txt", _k="3"):
-    from main import run_clustering
-    data = np.genfromtxt(txt_fname, delimiter=',', dtype=np.float64)
-    centers = data[:, -1].astype(np.int32)
-    points = data[:, :-1]
-
-    class args:
-        n = data.shape[0]
-        dim = points.shape[1]
-        k = _k
-        random = True
-
-    run_clustering(args, points, centers)
