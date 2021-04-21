@@ -25,11 +25,9 @@ Visualization created by `$ python main.py 5 100`:
    * **main.py:** The main module of the program. Glues everything together. Can also be used as a runnable script.
    * **kmeans.c:** CAPI extension of the KMeans algorithm implementation.
    * **kmeans_pp.py:** KMeans++ initialization algorithm, and caller of the CAPI module.
-   * **linalg.py:** Various linear algebra calculations. 
-     
+   * **linalg.py:** Various linear algebra calculations.
         In particular, Modified Gram Schmidt, QR Iterations, Eigengap Heuristic.
    * **output_data.py:** Results processing and outputting. 
-     
      In particular, prints informative messages,
    calculates summary from the results (e.g. Jaccard), outputs the final results to the output files.
    * **spectral_clustering.py:** Spectral clustering algorithm implementation.
@@ -64,8 +62,8 @@ Visualization created by `$ python main.py 5 100`:
     generates data and clusters using the given k and n.
     - **Using Invoke:** With `$ python -m invoke run {k} {n} {--Random || --no-Random}`, 
       following the same logic for `main.py` arguments.
-    - **With given TXT:** Use `$ python -m invoke run {fname} {k} {--random || --no-random}`, to cluster a specific data-set given by the txt file`fname`. 
-    - **With given Data** : one can provide an object of `params`, 
+    - **With given TXT:** Use `$ python -m invoke run {fname} {k} {--random || --no-random}`, to cluster a specific data-set given by the txt file `fname`. 
+    - **With given Data:** one can provide an object of `params`, 
       matrix of `points` , array of `centers` and run *Full Demo* using the following Python line: 
       
         `main.run_clustering(params, points, centers)`
