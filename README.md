@@ -85,7 +85,7 @@ Visualization created by `$ python main.py 5 100`:
     THE biggest time consumer in every run. A result which, of course, matches the fact that *n* is the major runtime factor. 
   - Using variation of binary search with a heuristic function we defined, we found what we consider a good approximation to the *Max Capacity*. 
     
-   `max_capacity_n := 470, max_capacity_k := 350`
+    `max_capacity_n := 470, max_capacity_k := 350`
   - **Important Note:** All these runtime-tests were done around February-2021 on TAU's server, NOVA. Lately we've noticed that 
     the server started acting slowly, inconsistently and unpredictably. 
     Our conclusions are accurate to the time they were measured. 
