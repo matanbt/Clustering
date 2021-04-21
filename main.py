@@ -45,6 +45,7 @@ def main():
     args = user_input.get_args()
     if not user_input.check_user_input(args):
         return None
+    # GENERATE DATA:
     params, points, centers = user_input.generate_points(args)
     # RUNS CLUSTERING, SAVES RESULTS FILES
     run_clustering(params, points, centers)

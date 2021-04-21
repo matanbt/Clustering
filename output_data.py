@@ -25,10 +25,12 @@ def print_data_txt(points, centers):
         :return: prints formatted data to 'data.txt'
     """
     n, d = points.shape
-    format_arr = ["%f"] * d + ["%d"]
+    # builds output as Numpy array
     output_array = np.empty((n, d + 1))
     output_array[:, :-1] = points
     output_array[:, -1] = centers
+    # saves the array as formatted-txt
+    format_arr = ["%f"] * d + ["%d"]
     np.savetxt(config.FNAME_DATA_TXT, output_array,
                fmt=format_arr, delimiter=',')
 
@@ -46,8 +48,9 @@ def print_clusters_txt(k, spectral_clusters, kmeans_spectral):
 
     def format_clusters(clusters):
         # helper method for formatting the clusters' string
+        # finds the relevant indices for each cluster using a dictionary
         _s = ""
-        clusters_dict = {}
+        clusters_dict = {} # key --> value: cluster --> string of its indices
         for i, cluster in enumerate(clusters):
             if cluster not in clusters_dict:
                 clusters_dict[cluster] = f"{i},"
@@ -73,9 +76,11 @@ def calc_jaccard(centers, clusters):
     """
     n = centers.shape[0]
     tri0, tri1 = np.triu_indices(n, 1)
-    # for each pair (i,j) s.t. i < j, marks True IFF i and j in the same cluster
+    # for each pair of indices (i,j) s.t. i < j,
+    # marks True IFF i and j were labeled with the same cluster
     centers_pairs = centers[tri0] == centers[tri1]
     clusters_pairs = clusters[tri0] == clusters[tri1]
+    # counts the union and intersection of this feature for each pair
     union_count = np.sum(centers_pairs | clusters_pairs)
     intersect_count = np.sum(centers_pairs & clusters_pairs)
     return intersect_count / union_count
