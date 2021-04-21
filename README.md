@@ -51,7 +51,6 @@ Visualization created by `$ python main.py 5 100`:
    creates 3 output files:
    - `data.txt` - The generated points and the corresponding center of each. 
    - `clusters.txt` - **First line** shows the K that was used. 
-     
      The **next K lines** shows the indices clustered to each label by Spectral Clustering. 
      The **later k lines** shows the indices as above by Kmeans.
    - `clusters.pdf` - provides a visualization of the clustering, as well as results summary and score for each clustering.
@@ -65,7 +64,6 @@ Visualization created by `$ python main.py 5 100`:
     - **With given TXT:** Use `$ python -m invoke run {fname} {k} {--random || --no-random}`, to cluster a specific data-set given by the txt file `fname`. 
     - **With given Data:** one can provide an object of `params`, 
       matrix of `points` , array of `centers` and run *Full Demo* using the following Python line: 
-      
         `main.run_clustering(params, points, centers)`
       
 
