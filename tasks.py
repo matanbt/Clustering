@@ -46,7 +46,7 @@ def time_with_seed(c, _n, _k, _d):
     """
     times non-random case, with given n, k, d
     """
-    from user_input import generate_points
+    from initialization import generate_points
     from main import run_clustering
 
     class args:

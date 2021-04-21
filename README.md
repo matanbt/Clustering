@@ -21,18 +21,18 @@ Visualization created by `$ python main.py 5 100`:
 ## Files and Modules
 #### Core Modules and Files:
    * **config.py:** Program's configurations and constants.
+   * **initialization.py:** Handles the input from the user, and Data generation.
    * **main.py:** The main module of the program. Glues everything together. Can also be used as a runnable script.
    * **kmeans.c:** CAPI extension of the KMeans algorithm implementation.
    * **kmeans_pp.py:** KMeans++ initialization algorithm, and caller of the CAPI module.
    * **linalg.py:** Various linear algebra calculations. 
      
-      In particular, Modified Gram Schmidt, QR Iterations, Eigengap Heuristic.
+        In particular, Modified Gram Schmidt, QR Iterations, Eigengap Heuristic.
    * **output_data.py:** Results processing and outputting. 
      
-      In particular, prints informative messages,
-     calculates summary from the results (e.g. Jaccard), outputs the final results to the output files.
+     In particular, prints informative messages,
+   calculates summary from the results (e.g. Jaccard), outputs the final results to the output files.
    * **spectral_clustering.py:** Spectral clustering algorithm implementation.
-   * **user_input.py:** Handles the input from the user. ?? GEN POINTS?
    
 #### Additional Modules:
    * **setup.py:**  Installation of Kmeans' CAPI extension.

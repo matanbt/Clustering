@@ -3,7 +3,7 @@
 Glues all modules together to provide the desired finished products
 """
 import numpy as np
-import user_input
+import initialization
 from spectral_clustering import run_nsc as nsc
 from kmeans_pp import kmeans
 from output_data import print_data_txt, print_clusters_txt, \
@@ -42,11 +42,11 @@ def main():
     # PRINTS INFORMATIVE MESSAGE:
     print_message()
     # PROCESS PARAMETERS:
-    args = user_input.get_args()
-    if not user_input.check_user_input(args):
+    args = initialization.get_args()
+    if not initialization.check_user_input(args):
         return None
     # GENERATE DATA:
-    params, points, centers = user_input.generate_points(args)
+    params, points, centers = initialization.generate_points(args)
     # RUNS CLUSTERING, SAVES RESULTS FILES
     run_clustering(params, points, centers)
 

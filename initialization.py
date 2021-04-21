@@ -1,5 +1,5 @@
 """
------ User Input Module -----
+----- Data Initialization Module -----
 Deals with accepting, processing and validating the user's input.
 Also deals  with generating random points intended to be clustered
 """
