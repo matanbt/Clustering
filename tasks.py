@@ -5,9 +5,10 @@ module for invoke tasks
 
 from invoke import task
 
-# ============ Official Tasks (UI): ============
+# ============ Official Tasks: ============
 @task(help={'k': "Amount of centers for the generated data",
-            'n': "Amount of points", 'Random': "for randomized points. Default - True"})
+            'n': "Amount of points for the generated data",
+            'Random': "For randomized n, k. Default - True"})
 def run(c, k=0, n=0, Random=True):
     """
     Setup the program and runs main.py with the given parameters
@@ -17,7 +18,7 @@ def run(c, k=0, n=0, Random=True):
     c.run(f"python3.8.5 main.py {Random} {k} {n}")
 
 
-# ============ Utilities: ============
+# ============ Additional Utilities: ============
 @task
 def build(c):
     c.run("python3.8.5 setup.py build_ext --inplace")
@@ -35,6 +36,7 @@ def clean(c):
 
 # ============ Tasks for developer purposes: ============
 from time import time
+import numpy as np
 
 REPEAT = 3
 RANDOM_STATE = 0  # SEED TO SET
@@ -61,17 +63,38 @@ def time_with_seed(c, _n, _k, _d):
     return t1 - t0
 
 
+@task
 def time_comparisons_with_seed(c):
     """
     runs time_with_seed for bunch of tests
     """
     comparisons_list = [
         # n,   k,  d
-        (470, 200, 2),
         (470, 200, 3),
         (312, 215, 2),
         (350, 159, 3),
         (400, 159, 3),
+        (520, 393, 3),
+        (223, 122, 3),
     ]
+
     for n, k, d in comparisons_list:
-        time_with_seed(c, n, k, d)
+        sum_runs = 0
+        for _ in range(REPEAT): 
+            sum_runs += time_with_seed(c, n, k, d)
+        print(f"AVERAGE TIME : n={n}, k={k}, d={d} --> {sum_runs / REPEAT} secs")
+
+@task
+def test_from_txt(txt_fname="shir-data-n400k10.txt", _k="3"):
+    from main import run_clustering
+    data = np.genfromtxt(txt_fname, delimiter=',', dtype=np.float64)
+    centers = data[:, -1].astype(np.int32)
+    points = data[:, :-1]
+
+    class args:
+        n = data.shape[0]
+        dim = points.shape[1]
+        k = _k
+        random = True
+
+    run_clustering(args, points, centers)
