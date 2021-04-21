@@ -107,8 +107,8 @@ def visualization_pdf(k, points, kmeans_clusters, spectral_clusters, spcetral_k,
     text_footer += f"n = {n}, k = {k}\n"
     text_footer += f"The k that was used for both algorithms: {spcetral_k}\n "
     text_footer += f"The Jaccard measure for Spectral Clustering: " \
-                   f"{jaccard_spectral : .5f}\n"
-    text_footer += f"The Jaccard measure for K-means: {jaccard_kmeans : .5f}"
+                   f"{jaccard_spectral : .2f}\n"
+    text_footer += f"The Jaccard measure for K-means: {jaccard_kmeans : .2f}"
     # figure's prologue
     fig = plt.figure(figsize=(7.5, 6))
     fig.suptitle(title_header, size=30, fontweight='bold')
