@@ -118,11 +118,7 @@ def sanity_check__run():
            and len({clusters[0],clusters[4],clusters[2]}) == 3
     print("TESTED RUN FOR SANITY-CHECK SUCCESSFULLY")
 
-def test__res_phase():
-    # TODO
-    # res = KMeans(n_clusters=k, random_state=0).fit(t)
-    # return res.labels_
-    pass
+
 def test_laplacian_comparison():
     w = np.random.rand(50,50)
     r1 = nsc.form_laplacian(w)
