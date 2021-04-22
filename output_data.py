@@ -47,10 +47,14 @@ def print_clusters_txt(k, spectral_clusters, kmeans_spectral):
     s = f"{k}\n"
 
     def format_clusters(clusters):
-        # helper method for formatting the clusters' string
-        # finds the relevant indices for each cluster using a dictionary
+        """
+        inner helper method for formatting the clusters' string
+        finds the relevant indices for each cluster using a dictionary
+        """
         _s = ""
-        clusters_dict = {} # key --> value: cluster --> string of its indices
+        # dict with each element representing -
+        # Key: cluster, Value: string of its indices
+        clusters_dict = {}
         for i, cluster in enumerate(clusters):
             if cluster not in clusters_dict:
                 clusters_dict[cluster] = f"{i},"
@@ -80,8 +84,9 @@ def calc_jaccard(centers, clusters):
     # marks True IFF i and j were labeled with the same cluster
     centers_pairs = centers[tri0] == centers[tri1]
     clusters_pairs = clusters[tri0] == clusters[tri1]
-    # counts the union and intersection of this feature for each pair
+    # counts amount of pairs labeled the same in either the centers OR the clustering
     union_count = np.sum(centers_pairs | clusters_pairs)
+    # counts amount of pairs labeled the same in BOTH the centers and the clustering
     intersect_count = np.sum(centers_pairs & clusters_pairs)
     return intersect_count / union_count
 
