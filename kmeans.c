@@ -221,7 +221,7 @@ static errors_t calc_mu(cluster_t * cluster, int d, int * did_cluster_change)
     *did_cluster_change = 0;
     for (j = 0; j < d; j++)
     {
-        if (abs(new_mu[j] - cluster->mu[j]) < EPSILON)
+        if (euclidean_distance(new_mu, cluster->mu, d) > EPSILON)
         {
             *did_cluster_change = 1;
             break;
@@ -398,6 +398,7 @@ static errors_t kmeans_impl(obs_t * observations, cluster_t * clusters, int d,
         did_cluster_change = 0;
         for (i = 0; i < K; i++)
         {
+            cluster_change_status = 0;
             rc = calc_mu(&clusters[i], d, &cluster_change_status);
             if (E_SUCCESS != rc)
             {
