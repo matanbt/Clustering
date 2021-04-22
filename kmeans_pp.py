@@ -23,13 +23,17 @@ def k_means_pp(k, obs_arr):
 
     last_index = np.random.choice(N)
     initial_indices[0] = last_index
-    minimal_distances = np.linalg.norm(obs_arr - obs_arr[last_index], axis=1)
+    minimal_distances = np.linalg.norm(obs_arr - obs_arr[last_index], axis=1) ** 2
     probs = np.empty_like(minimal_distances)
     for i in range(1, k):
+        # Calculate probabilities
         np.divide(minimal_distances, minimal_distances.sum(), out=probs)
         last_index = np.random.choice(N, p=probs)
         initial_indices[i] = last_index
-        new_distances = np.linalg.norm(obs_arr - obs_arr[last_index], axis=1)
+        # Calculate new minimal distances by calculating the distance from the
+        # newly chosen centroid, and getting the minimum from the previous
+        # distances and this calculated distance
+        new_distances = np.linalg.norm(obs_arr - obs_arr[last_index], axis=1) ** 2
         np.minimum(minimal_distances, new_distances, out=minimal_distances)
 
     # Resetting numpy's random seed
