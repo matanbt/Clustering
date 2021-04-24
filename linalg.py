@@ -59,6 +59,7 @@ def qr_iteration(a):
             # reached convergence
             return a_, q_
         q_, temp_q = temp_q, q_
+
     # reached iterations bound (n)
     return a_, q_
 
@@ -81,7 +82,7 @@ def eigengap_method(a_, k=None):
     # sorts eigen-values, and keeps the *indices* of the sorted array
     sorted_indices = np.argsort(eigen_values)
     if k is None:
-        # calculates the abs difference array for the first half of the  eigen-values
+        # calculates the abs difference array for the first half of the eigen-values
         delta_arr = np.diff(eigen_values[sorted_indices][:ceil(n / 2)])
         np.abs(delta_arr, out=delta_arr)
         # gets the first appearance of the maximum difference

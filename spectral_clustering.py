@@ -22,6 +22,7 @@ def form_weight(x):
     triu1, triu2 = np.triu_indices(n, 1)
     # for each i<j calculates the norm of the difference between x[i], x[j]
     upper_triangle = np.linalg.norm(x[triu1] - x[triu2], axis=1)
+    # applies the desired weight function on the norms
     np.exp(-0.5 * upper_triangle, out=upper_triangle)
     w[triu1, triu2] = upper_triangle
     w = w + w.T  # adds the symmetric upper triangle

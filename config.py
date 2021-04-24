@@ -8,6 +8,7 @@ EPSILON = 0.0001
 MAX_ITER = 300
 
 # Program Performance Limits
+# More on this choice in README.md
 MAX_N_2D_CAPACITY = 470
 MAX_K_2D_CAPACITY = 350
 MAX_N_3D_CAPACITY = 470

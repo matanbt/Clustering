@@ -1,14 +1,16 @@
 """
-K-MEANS-PP ALGORITHM IMPLEMENTATION
+----- KMEANS Module -----
+K-MEANS-PP Algorithm Implementation and a wrapper for Kmeans CAPI extension.
 """
 
 import numpy as np
 import mykmeanssp as km
 
+# Seed to be used casting indices in kmeans-init, a module constant
 KMEANS_INIT_RANDOM_SEED = 0
 
 
-def k_means_pp(k, obs_arr):
+def k_means_init(k, obs_arr):
     """
     The initialization part of the KMeans++ algorithm.
     :param k: Number of clusters
@@ -51,7 +53,7 @@ def kmeans(points, K, N, d, MAX_ITER):
     :param MAX_ITER: Maximum iterations for the KMeans algorithm
     :return: The cluster of each observation, as a list.
     """
-    indices = k_means_pp(K, points)
+    indices = k_means_init(K, points)
     c_points = points.tolist()
     indices = indices.tolist()
     clusters = km.kmeans(c_points, indices, K, N, d, MAX_ITER)

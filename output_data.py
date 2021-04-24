@@ -25,10 +25,12 @@ def print_data_txt(points, centers):
         :return: prints formatted data to 'data.txt'
     """
     n, d = points.shape
-    format_arr = ["%f"] * d + ["%d"]
+    # builds output as Numpy array
     output_array = np.empty((n, d + 1))
     output_array[:, :-1] = points
     output_array[:, -1] = centers
+    # saves the array as formatted-txt
+    format_arr = ["%f"] * d + ["%d"]
     np.savetxt(config.FNAME_DATA_TXT, output_array,
                fmt=format_arr, delimiter=',')
 
@@ -45,8 +47,13 @@ def print_clusters_txt(k, spectral_clusters, kmeans_spectral):
     s = f"{k}\n"
 
     def format_clusters(clusters):
-        # helper method for formatting the clusters' string
+        """
+        inner helper method for formatting the clusters' string
+        finds the relevant indices for each cluster using a dictionary
+        """
         _s = ""
+        # dict with each element representing -
+        # Key: cluster, Value: string of its indices
         clusters_dict = {}
         for i, cluster in enumerate(clusters):
             if cluster not in clusters_dict:
@@ -73,10 +80,13 @@ def calc_jaccard(centers, clusters):
     """
     n = centers.shape[0]
     tri0, tri1 = np.triu_indices(n, 1)
-    # for each pair (i,j) s.t. i < j, marks True IFF i and j in the same cluster
+    # for each pair of indices (i,j) s.t. i < j,
+    # marks True IFF i and j were labeled with the same cluster
     centers_pairs = centers[tri0] == centers[tri1]
     clusters_pairs = clusters[tri0] == clusters[tri1]
+    # counts amount of pairs labeled the same in either the centers OR the clustering
     union_count = np.sum(centers_pairs | clusters_pairs)
+    # counts amount of pairs labeled the same in BOTH the centers and the clustering
     intersect_count = np.sum(centers_pairs & clusters_pairs)
     return intersect_count / union_count
 
@@ -102,8 +112,8 @@ def visualization_pdf(k, points, kmeans_clusters, spectral_clusters, spcetral_k,
     text_footer += f"n = {n}, k = {k}\n"
     text_footer += f"The k that was used for both algorithms: {spcetral_k}\n "
     text_footer += f"The Jaccard measure for Spectral Clustering: " \
-                   f"{jaccard_spectral : .5f}\n"
-    text_footer += f"The Jaccard measure for K-means: {jaccard_kmeans : .5f}"
+                   f"{jaccard_spectral : .2f}\n"
+    text_footer += f"The Jaccard measure for K-means: {jaccard_kmeans : .2f}"
     # figure's prologue
     fig = plt.figure(figsize=(7.5, 6))
     fig.suptitle(title_header, size=30, fontweight='bold')
