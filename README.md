@@ -59,7 +59,7 @@ Visualization created by `$ python main.py 5 100`:
       then calculates *heuristic-k* using Eigengap Method and uses *this* k to run the clustering algorithms.
     - `$ python main.py {k} {n}` : when {k}, {n} to be replaced with integers indicates the desired values of k and n.
     generates data and clusters using the given k and n.
-    - **Using Invoke:** With `$ python -m invoke run {k} {n} {--Random || --no-Random}`, 
+    - **Using Invoke:** With `$ python -m invoke run -k={k} -n={n} {--Random || --no-Random}`, 
       following the same logic for `main.py` arguments.
     - **With given TXT:** Use `$ python -m invoke run {fname} {k} {--random || --no-random}`, to cluster a specific data-set given by the txt file `fname`. 
     - **With given Data:** one can provide an object of `params`, 
