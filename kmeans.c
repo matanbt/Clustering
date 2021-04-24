@@ -217,16 +217,13 @@ static errors_t calc_mu(cluster_t * cluster, int d, int * did_cluster_change)
         }
     }
 
-    /*checks if change has happened:*/
+    /* Checks if change has happened */
     *did_cluster_change = 0;
-    for (j = 0; j < d; j++)
+    if (euclidean_distance(new_mu, cluster->mu, d) > EPSILON)
     {
-        if (euclidean_distance(new_mu, cluster->mu, d) > EPSILON)
-        {
-            *did_cluster_change = 1;
-            break;
-        }
+        *did_cluster_change = 1;
     }
+
     free(cluster->mu);
     cluster->mu = new_mu;
     return E_SUCCESS;
